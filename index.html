@@ -1,0 +1,2340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>eyewa ECIP — Training OS</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#F1F1EF;color:#16161A;font-size:13px;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:12px}
+select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2388888F' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:28px!important}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#CECEC8;border-radius:3px}
+.card{background:#fff;border:1px solid #E6E6E2;border-radius:12px;padding:14px 16px}
+.btn{padding:6px 13px;border-radius:8px;font-size:11px;font-weight:600;border:1px solid #CECEC8;background:#fff;color:#16161A;transition:opacity .15s}
+.btn:hover{opacity:.85}.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-primary{background:#0a5c43;color:#fff;border:none}
+.btn-secondary{background:#e8f5ef;color:#0a5c43;border:1px solid #4cc49a}
+.btn-ghost{background:transparent;color:#44444C;border:1px solid #CECEC8}
+.btn-danger{background:#FDF0F0;color:#D03535;border:1px solid #EEBCBC}
+.btn-sm{padding:3px 9px;font-size:10px}
+.tag{display:inline-flex;align-items:center;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600;white-space:nowrap}
+.tag-green{background:#e8f5ef;color:#0a5c43}.tag-amber{background:#FEF4E8;color:#C07818}.tag-red{background:#FDF0F0;color:#D03535}.tag-blue{background:#EDF2FD;color:#2258C0}.tag-purp{background:#EEEAFC;color:#6040D8}.tag-gray{background:#EDEDEA;color:#44444C}
+.bar-track{height:5px;background:#EBEBEA;border-radius:5px;overflow:hidden}
+.bar-fill{height:100%;border-radius:5px;transition:width .4s}
+.sh{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.sh-title{font-size:13px;font-weight:700;color:#16161A;letter-spacing:-.02em}
+.sh-sub{font-size:10px;color:#88888F;margin-top:1px}
+.stat-card{background:#fff;border:1px solid #E6E6E2;border-radius:12px;padding:13px 16px}
+.stat-label{font-size:9px;font-weight:700;color:#88888F;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+.stat-value{font-size:22px;font-weight:700;line-height:1;font-family:monospace}
+.stat-sub{font-size:10px;color:#88888F;margin-top:3px}
+.input{width:100%;border:1px solid #E6E6E2;border-radius:8px;padding:7px 9px;font-size:11px;background:#fff;outline:none;color:#16161A;transition:border-color .15s}
+.input:focus{border-color:#4cc49a}
+.fl{font-size:9px;font-weight:700;color:#88888F;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+.fl-req::after{content:" *";color:#D03535}
+.nav-tab{height:50px;padding:0 12px;background:none;border:none;border-bottom:2px solid transparent;font-size:11px;font-weight:700;color:#88888F;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:4px;transition:color .15s}
+.nav-tab.active{color:#0a5c43;border-bottom-color:#1D9E75}
+.pill-btn{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid #CECEC8;background:transparent;color:#44444C;transition:all .15s}
+.pill-btn.active{background:#e8f5ef;color:#0a5c43;border-color:#4cc49a}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px}
+.modal-box{background:#fff;border-radius:14px;padding:22px 24px;width:100%;max-width:620px;max-height:90vh;overflow-y:auto}
+.section-header{font-size:9px;font-weight:700;color:#88888F;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+/* Content Admin Left Nav */
+.content-nav{width:190px;flex-shrink:0;background:#fff;border-right:1px solid #E6E6E2;padding:14px 0;overflow-y:auto}
+.content-nav-section{font-size:9px;font-weight:700;color:#88888F;text-transform:uppercase;letter-spacing:.07em;padding:14px 16px 6px}
+.content-nav-item{padding:7px 16px;font-size:11px;font-weight:600;color:#44444C;cursor:pointer;display:flex;align-items:center;justify-content:space-between;border-left:3px solid transparent;transition:all .1s}
+.content-nav-item:hover{background:#F8F8F6;color:#16161A}
+.content-nav-item.active{background:#e8f5ef;color:#0a5c43;border-left-color:#1D9E75}
+.content-nav-badge{font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px}
+/* Mobile trainer */
+.mobile-frame{max-width:430px;margin:0 auto}
+.mobile-card{background:#fff;border-radius:14px;padding:14px 16px;margin-bottom:10px;border:1px solid #E6E6E2;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.big-btn{width:100%;padding:15px;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px}
+.bottom-nav{position:sticky;bottom:0;background:#fff;border-top:1px solid #E6E6E2;padding:10px 0 4px;display:flex;justify-content:space-around}
+.bottom-nav button{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 12px;border-radius:8px}
+/* Status flow */
+.flow-step{display:flex;flex-direction:column;align-items:center;gap:3px}
+.flow-dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700}
+.flow-line{flex:1;height:2px;margin:0 3px;margin-bottom:14px}
+/* Hover effects */
+.action-row:hover{box-shadow:0 2px 12px rgba(0,0,0,.09)}
+.store-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.07)}
+</style>
+</head>
+<body>
+<div id="app" style="display:flex;flex-direction:column;height:100vh;overflow:hidden"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// DESIGN TOKENS
+// ═══════════════════════════════════════════════════════════════════
+const C = {
+  ew:"#1D9E75",ewd:"#0a5c43",ewl:"#e8f5ef",ewm:"#4cc49a",
+  bg:"#F1F1EF",card:"#FFFFFF",b1:"#E6E6E2",b2:"#CECEC8",
+  t1:"#16161A",t2:"#44444C",t3:"#88888F",t4:"#BEBEBF",
+  red:"#D03535",redl:"#FDF0F0",redb:"#EEBCBC",
+  amb:"#C07818",ambl:"#FEF4E8",ambb:"#F0CE8A",
+  blue:"#2258C0",bluel:"#EDF2FD",blueb:"#AECAF0",
+  purp:"#6040D8",purpl:"#EEEAFC",
+};
+
+// ═══════════════════════════════════════════════════════════════════
+// STATE (global reactive store)
+// ═══════════════════════════════════════════════════════════════════
+const STATE = {
+  viewIdx: 0,
+  tab: "mobile",
+  contentSubTab: "launcher",
+  convFilterRegion: "all",
+  convFilterRisk: "all",
+  convExpandedStore: null,
+  actionsFilterStatus: "open",
+  actionsFilterPriority: "all",
+  actionsFilterStore: "all",
+  actionsFilterSource: "all",
+  actionsSortBy: "priority",
+  selAction: null,
+  selSession: null,
+  showCreateSession: false,
+  showAddCourse: false,
+  prefillStore: null,
+  trainerScreen: "home",
+  trainerSelStore: null,
+  trainerSelSession: null,
+  smTab: "overview",
+  academyTab: "programs",
+  academyProg: "P02",
+  academyPath: "SA",
+  sessions: [],
+  actions: [],
+  trainers: [],
+  courses: [],
+  addCourseForm: {title:"",code:"",desc:"",program:"P02",topic:"",trainingType:"Mandatory",roles:[],cap:20,days:30,format:"classroom",assess:false,passScore:75,kpis:[],notes:""},
+  reviewQueueItems: [
+    {id:"RQ1",title:"NYLO SS26 — Course summary EN",type:"Course summary",status:"pending",ai:"Baseer"},
+    {id:"RQ2",title:"NYLO SS26 — Key selling points",type:"Selling points",status:"pending",ai:"Baseer"},
+    {id:"RQ3",title:"NYLO SS26 — 10-question quiz",type:"Quiz",status:"pending",ai:"Baseer"},
+    {id:"RQ4",title:"NYLO SS26 — Trainer guide",type:"Trainer guide",status:"pending",ai:"Baseer"},
+    {id:"RQ5",title:"NYLO SS26 — WhatsApp message EN+AR",type:"WhatsApp",status:"pending",ai:"Baseer"},
+  ],
+  storeRequests: [
+    {id:"SR1",store:"Al Yasmin Mall",request:"Insurance refresher for 4 staff",date:"2026-04-14",status:"scheduled"},
+    {id:"SR2",store:"Nakheel Mall",request:"CLARIVO product coaching",date:"2026-04-12",status:"in_progress"},
+    {id:"SR3",store:"Red Sea Mall",request:"Onboarding for 2 new joiners",date:"2026-04-10",status:"pending"},
+  ],
+  baseerGenerated: false,
+  baseerLoading: false,
+  sessionAttendance: {},
+};
+
+function set(path, value) {
+  const keys = path.split(".");
+  let obj = STATE;
+  for (let i = 0; i < keys.length - 1; i++) obj = obj[keys[i]];
+  obj[keys[keys.length - 1]] = value;
+  render();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════════════
+const ROLES_META = {
+  super_admin:    {label:"Super Admin",    color:"#6040D8",bg:"#EEEAFC"},
+  training_admin: {label:"Training Admin", color:"#2258C0",bg:"#EDF2FD"},
+  trainer:        {label:"Trainer",        color:"#1D9E75",bg:"#e8f5ef"},
+  manager:        {label:"Store Manager",  color:"#C07818",bg:"#FEF4E8"},
+};
+const VIEWS = [
+  {id:"trainer_mobile", roleKey:"trainer",      label:"Trainer",       av:"MO", pill:"Mohammad Othman",
+   tabs:[{id:"mobile",l:"📱 Trainer"}]},
+  {id:"super_admin",    roleKey:"super_admin",   label:"Super Admin",   av:"RA", pill:"Ruyuf Alqahtani",
+   tabs:[{id:"dashboard",l:"🏠 Dashboard"},{id:"conversion",l:"📈 Conversion"},{id:"actions",l:"⚡ Actions"},{id:"sessions",l:"📋 Sessions"},{id:"calendar",l:"📅 Calendar"},{id:"assessments",l:"🧠 Assessments"},{id:"trainers",l:"👥 Trainers"},{id:"academy",l:"🎓 Academy"},{id:"content",l:"✏️ Content"}]},
+  {id:"training_admin", roleKey:"training_admin",label:"Training Admin", av:"WH", pill:"Wissam Haddad",
+   tabs:[{id:"conversion",l:"📈 Conversion"},{id:"actions",l:"⚡ Actions"},{id:"sessions",l:"📋 Sessions"},{id:"calendar",l:"📅 Calendar"},{id:"assessments",l:"🧠 Assessments"},{id:"academy",l:"🎓 Academy"},{id:"content",l:"✏️ Content"}]},
+  {id:"sm",             roleKey:"manager",       label:"Store Manager",  av:"AA", pill:"Ahmed Asiri",
+   tabs:[{id:"sm_conv",l:"📊 My Store"}]},
+];
+
+STATE.trainers = [
+  {id:"T01",name:"Mohammad Othman",  region:"Central",country:"KSA",specialization:["Retail & Sales","Guest Experience"],stores:["Al Yasmin Mall","Nakheel Mall","Panorama Mall","Al Aared Mall","Riyadh Park 2"],status:"active",roleType:"trainer",manager:"Wissam Haddad",startDate:"2023-03-01"},
+  {id:"T02",name:"Mahmoud Draz",     region:"Central",country:"KSA",specialization:["Optical","CLARIVO","OPTICORE"],    stores:["Riyadh Park","Mall of Arabia","Granada Mall","Kingdom Centre"],               status:"active",roleType:"trainer",manager:"Wissam Haddad",startDate:"2022-09-15"},
+  {id:"T03",name:"Newton Selvarajan",region:"UAE",    country:"UAE",specialization:["Retail & Sales","Brand Knowledge"],stores:["Dubai Mall","Mall of Emirates","Ibn Battuta","City Walk"],                     status:"active",roleType:"trainer",manager:"Sara Khalil",  startDate:"2021-11-20"},
+  {id:"T04",name:"Lama Alshaalan",   region:"Central",country:"KSA",specialization:["Sales","Insurance"],              stores:["Panorama Mall","Hayat Mall","Yasmin Mall","Nakheel Mall"],                     status:"active",roleType:"trainer",manager:"Wissam Haddad",startDate:"2023-06-01"},
+  {id:"T05",name:"Shatha Alghamdi",  region:"Western",country:"KSA",specialization:["Retail & Sales","Onboarding"],    stores:["Red Sea Mall","Haifa Mall","Jeddah Park"],                                     status:"active",roleType:"trainer",manager:"Nadia Badr",   startDate:"2023-01-10"},
+  {id:"T06",name:"Emad Abdulhaleem", region:"Central",country:"KSA",specialization:["Optical","CLARIVO","MedTech"],    stores:["Al Khair Mall","Boulevard Riyadh","Riyadh Gallery"],                           status:"active",roleType:"senior_trainer",manager:"Wissam Haddad",startDate:"2021-05-01"},
+  {id:"T07",name:"Wissam Haddad",    region:"Central",country:"KSA",specialization:["Leadership","Coaching"],          stores:["All Central"],                                                                  status:"active",roleType:"rtm",    manager:"Ruyuf Alqahtani",startDate:"2020-01-01"},
+  {id:"T08",name:"Ruyuf Alqahtani",  region:"All",   country:"KSA",specialization:["Strategy","All"],                 stores:["All"],                                                                          status:"active",roleType:"director",manager:"—",            startDate:"2019-06-01"},
+];
+
+const PROGRAMS = [
+  {id:"P01",code:"ONB",name:"Onboarding Program",        roles:["SA","Junior SA","Senior SA","Optician","Optometrist","SIC","SM"],color:"#6040D8"},
+  {id:"P02",code:"SA", name:"Sales Associate Program",   roles:["SA","Junior SA","Senior SA"],color:"#1D9E75"},
+  {id:"P03",code:"SSA",name:"Senior SA Program",         roles:["Senior SA"],color:"#1D9E75"},
+  {id:"P04",code:"SIC",name:"Store In-Charge Program",   roles:["SIC"],color:"#C07818"},
+  {id:"P05",code:"SM", name:"Store Manager Program",     roles:["SM","ASM"],color:"#C07818"},
+  {id:"P06",code:"OPT",name:"Optical Programs",          roles:["Optician","Optometrist"],color:"#2258C0"},
+  {id:"P07",code:"BRD",name:"Brand Knowledge",           roles:["SA","Senior SA","SIC","SM","Optician"],color:"#6040D8"},
+  {id:"P08",code:"CX", name:"Customer Journey",          roles:["SA","Junior SA","Senior SA","SIC","SM"],color:"#D03535"},
+  {id:"P09",code:"TTT",name:"Train The Trainer",         roles:["Trainer"],color:"#0a5c43"},
+];
+
+STATE.courses = [
+  {id:"C01",pid:"P01",name:"Retail Team Induction",          topic:"ONBOARDING",       sub:"Retail Team",        type:"Mandatory",roles:["SA","Junior SA","Senior SA","SIC","SM","Optician","Optometrist"],cap:25,assess:false,days:1},
+  {id:"C02",pid:"P02",name:"Needs Discovery & Frame Styling", topic:"RETAIL AND SALES", sub:"Selling Skills",     type:"Mandatory",roles:["SA","Junior SA","Senior SA"],cap:20,assess:false,days:30},
+  {id:"C03",pid:"P02",name:"Guest Experience — Phase 1 & 2", topic:"RETAIL AND SALES", sub:"Guest Experience",   type:"Mandatory",roles:["SA","Junior SA","Senior SA","SIC","SM"],cap:20,assess:false,days:30},
+  {id:"C04",pid:"P02",name:"Collection Ceremony",            topic:"RETAIL AND SALES", sub:"Guest Experience",   type:"Mandatory",roles:["SA","Junior SA","Senior SA","SIC","SM"],cap:18,assess:false,days:30},
+  {id:"C05",pid:"P02",name:"Insurance Silence Protocol",     topic:"RETAIL AND SALES", sub:"Insurance",          type:"Mandatory",roles:["SA","Senior SA","SIC","SM"],cap:50,assess:true,passScore:80,days:30},
+  {id:"C06",pid:"P02",name:"EG Tool — Full Walkthrough",     topic:"SYSTEM",           sub:"EG tool",            type:"Mandatory",roles:["SA","Junior SA","Senior SA","SIC","SM","Optician"],cap:20,assess:false,days:30},
+  {id:"C07",pid:"P02",name:"CLARIVO — Single Vision Lens",   topic:"CLARIVO",          sub:"Single vision lens", type:"Mandatory",roles:["SA","Optician","Optometrist"],cap:15,assess:false,days:60},
+  {id:"C08",pid:"P02",name:"CLARIVO — Progressive Lens",     topic:"CLARIVO",          sub:"Progressive lens",   type:"Mandatory",roles:["SA","Optician","Optometrist"],cap:15,assess:true,passScore:75,days:60},
+  {id:"C09",pid:"P02",name:"Objection Handling",             topic:"RETAIL AND SALES", sub:"Objection Handling", type:"Targeted", roles:["SA","Senior SA","SIC"],cap:20,assess:false},
+  {id:"C10",pid:"P02",name:"Styling Program",                topic:"RETAIL AND SALES", sub:"Promotions",         type:"Optional", roles:["SA","Junior SA","Senior SA","SIC","SM"],cap:20,assess:false},
+  {id:"C11",pid:"P03",name:"Advanced Objection Handling",    topic:"RETAIL AND SALES", sub:"Objection Handling", type:"Mandatory",roles:["Senior SA"],cap:20,assess:false,days:30},
+  {id:"C12",pid:"P03",name:"CLARIVO — Glazing",              topic:"CLARIVO",          sub:"Glazing",            type:"Mandatory",roles:["Senior SA","Optician"],cap:15,assess:false,days:60},
+  {id:"C13",pid:"P03",name:"Team Coaching Basics",           topic:"RETAIL AND SALES", sub:"Selling Skills",     type:"Targeted", roles:["Senior SA"],cap:15,assess:false},
+  {id:"C14",pid:"P04",name:"SIC Program — Module 1",         topic:"READINESS",        sub:"SIC Program",        type:"Mandatory",roles:["SIC"],cap:12,assess:true,passScore:75,days:90},
+  {id:"C15",pid:"P04",name:"SIC Program — Module 2",         topic:"READINESS",        sub:"SIC Program",        type:"Mandatory",roles:["SIC"],cap:12,assess:true,passScore:75,days:120},
+  {id:"C16",pid:"P04",name:"Floor Management & KPIs",        topic:"RETAIL AND SALES", sub:"KPIs",               type:"Mandatory",roles:["SIC","SM"],cap:15,assess:false,days:90},
+  {id:"C17",pid:"P04",name:"Entrepreneur Workshop",          topic:"READINESS",        sub:"SIC Program",        type:"Targeted", roles:["SIC"],cap:15,assess:false},
+  {id:"C18",pid:"P05",name:"SM Program — Operations",        topic:"READINESS",        sub:"SM Program",         type:"Mandatory",roles:["SM","ASM"],cap:12,assess:true,passScore:80,days:90},
+  {id:"C19",pid:"P05",name:"SM Program — People Leadership", topic:"RETAIL AND SALES", sub:"KPIs",               type:"Mandatory",roles:["SM","ASM"],cap:12,assess:false,days:90},
+  {id:"C20",pid:"P05",name:"SM Program — Commercial",        topic:"RETAIL AND SALES", sub:"KPIs",               type:"Targeted", roles:["SM"],cap:12,assess:false},
+  {id:"C21",pid:"P06",name:"OPTICORE — Block 1",             topic:"READINESS",        sub:"Block 1",            type:"Mandatory",roles:["Optician"],cap:12,assess:true,passScore:80,days:60},
+  {id:"C22",pid:"P06",name:"OPTICORE — Block 2",             topic:"READINESS",        sub:"Block 2",            type:"Mandatory",roles:["Optician"],cap:12,assess:true,passScore:80,days:90},
+  {id:"C25",pid:"P06",name:"Eye Test Conversion",            topic:"MEDTECH",          sub:"Eye Test",           type:"Mandatory",roles:["Optometrist"],cap:10,assess:true,passScore:80,days:60},
+  {id:"C26",pid:"P06",name:"Fitting & Measurement",          topic:"OPTICAL",          sub:"Fitting",            type:"Mandatory",roles:["Optician","Optometrist"],cap:10,assess:true,passScore:80,days:30},
+  {id:"C28",pid:"P07",name:"NYLO SS26 — Collection Launch",  topic:"BRAND",            sub:"SS26",               type:"Targeted", roles:["SA","Senior SA","SIC","SM"],cap:30,assess:false},
+];
+
+STATE.sessions = [
+  {id:"ES01",cid:"C03",course:"Guest Experience — Phase 1 & 2",  pid:"P02",program:"SA Program",  type:"classroom",date:"2026-04-07",time:"09:00",dur:"9h", store:"Heraa Mall",          cap:20,reg:14,waitlist:0,trainingType:"Mandatory",roles:["SA","Junior SA"],assess:false,status:"completed",sync:"synced"},
+  {id:"ES02",cid:"C05",course:"Insurance Silence Protocol",       pid:"P02",program:"SA Program",  type:"virtual",  date:"2026-04-10",time:"18:00",dur:"3h", store:"Virtual — All CR",     cap:50,reg:31,waitlist:3,trainingType:"Mandatory",roles:["SA","Senior SA","SIC","SM"],assess:true,passScore:80,status:"completed",sync:"synced"},
+  {id:"ES03",cid:"C08",course:"CLARIVO — Progressive Lens",       pid:"P02",program:"SA Program",  type:"classroom",date:"2026-04-22",time:"10:00",dur:"4h", store:"Panorama Mall",        cap:15,reg:8, waitlist:0,trainingType:"Mandatory",roles:["SA","Optician","Optometrist"],assess:true,passScore:75,status:"open",sync:"not_synced"},
+  {id:"ES04",cid:"C04",course:"Collection Ceremony",              pid:"P02",program:"SA Program",  type:"instore",  date:"2026-04-25",time:"10:00",dur:"3h", store:"Al Yasmin Mall",       cap:18,reg:18,waitlist:2,trainingType:"Mandatory",roles:["SA","SIC","SM"],assess:false,status:"open",sync:"not_synced"},
+  {id:"ES05",cid:"C01",course:"Retail Team Induction",            pid:"P01",program:"Onboarding",  type:"classroom",date:"2026-04-28",time:"08:30",dur:"8h", store:"Al Yasmin Mall",       cap:12,reg:2, waitlist:0,trainingType:"Mandatory",roles:["SA","Junior SA"],assess:false,status:"planned",sync:"not_synced"},
+  {id:"ES06",cid:"C28",course:"NYLO SS26 — Collection Launch",    pid:"P07",program:"Brand",       type:"instore",  date:"2026-04-10",time:"09:00",dur:"2h", store:"Nakheel Mall",         cap:30,reg:22,waitlist:0,trainingType:"Targeted", roles:["SA","Senior SA"],assess:false,status:"completed",sync:"synced"},
+  {id:"ES07",cid:"C14",course:"SIC Program — Module 1",           pid:"P04",program:"SIC Program", type:"classroom",date:"2026-04-21",time:"09:00",dur:"8h", store:"Riyadh Office",        cap:12,reg:4, waitlist:0,trainingType:"Mandatory",roles:["SIC"],assess:true,passScore:75,status:"open",sync:"not_synced"},
+  {id:"ES08",cid:"C07",course:"CLARIVO — Single Vision Lens",     pid:"P02",program:"SA Program",  type:"instore",  date:"2026-04-26",time:"14:00",dur:"2h", store:"Al Aared Mall",        cap:8, reg:6, waitlist:0,trainingType:"Mandatory",roles:["SA","Optician"],assess:false,status:"planned",sync:"not_synced"},
+  {id:"ES09",cid:"C09",course:"Objection Handling",               pid:"P02",program:"SA Program",  type:"instore",  date:"2026-04-30",time:"15:00",dur:"2h", store:"Nakheel Mall",         cap:10,reg:6, waitlist:0,trainingType:"Targeted", roles:["SA"],assess:false,status:"planned",sync:"not_synced"},
+];
+
+STATE.actions = [
+  {id:"A001",source:"Assessment Result",sourceIcon:"📊",store:"Al Yasmin Mall",person:"Remas Gharwi",role:"SA",gap:"Insurance Handling",course:"Insurance Silence Protocol",cid:"C05",priority:"critical",due:"2026-04-15",status:"open",owner:"Mohammad Othman",kpi:"Insurance Attachment Rate",severity:3,notes:"Scored 38% on insurance quiz — bottom of region"},
+  {id:"A002",source:"Assessment Result",sourceIcon:"📊",store:"Al Yasmin Mall",person:"Karim Samir",role:"Optician",gap:"Lens Recommendation",course:"CLARIVO — Progressive Lens",cid:"C08",priority:"critical",due:"2026-04-18",status:"open",owner:"Mohammad Othman",kpi:"Lens Upgrade Rate",severity:3,notes:"Failed CLARIVO assessment twice — passScore 75%"},
+  {id:"A003",source:"Assessment Result",sourceIcon:"📊",store:"Al Yasmin Mall",person:"Hayam Aleisawi",role:"SA",gap:"Insurance Handling",course:"Insurance Silence Protocol",cid:"C05",priority:"high",due:"2026-04-15",status:"open",owner:"Mohammad Othman",kpi:"Insurance Attachment Rate",severity:2,notes:"Scored 52% — below 70% threshold"},
+  {id:"A004",source:"Manager Request",sourceIcon:"📩",store:"Al Yasmin Mall",person:"Store team",role:"SA",gap:"Insurance Handling",course:"Insurance Silence Protocol",cid:"C05",priority:"high",due:"2026-04-20",status:"assigned",owner:"Mohammad Othman",sessionId:"ES02",kpi:"Insurance Attachment Rate",severity:2,notes:"Ahmed Asiri requested group session — 7 staff below threshold"},
+  {id:"A005",source:"Overdue Mandatory",sourceIcon:"⏰",store:"Al Yasmin Mall",person:"Remas Gharwi",role:"SA",gap:"Guest Experience",course:"Guest Experience — Phase 1 & 2",cid:"C03",priority:"high",due:"2026-04-10",status:"open",owner:"Mohammad Othman",kpi:"NPS / Mystery Shopper",severity:2,notes:"D30 target missed — 9 days overdue"},
+  {id:"A006",source:"Overdue Mandatory",sourceIcon:"⏰",store:"Al Yasmin Mall",person:"Raghad Maghrabi",role:"SA",gap:"Guest Experience",course:"Guest Experience — Phase 1 & 2",cid:"C03",priority:"high",due:"2026-04-10",status:"open",owner:"Mohammad Othman",kpi:"NPS / Mystery Shopper",severity:2,notes:"D30 target missed — inactive on LearnLab"},
+  {id:"A007",source:"KPI Trigger",sourceIcon:"📉",store:"Nakheel Mall",person:"Store team",role:"SA",gap:"Objection Handling",course:"Objection Handling",cid:"C09",priority:"high",due:"2026-04-30",status:"open",owner:"Mohammad Othman",kpi:"Conversion Rate",severity:2,notes:"Conversion rate dropped 8% — Nakheel YTD 42% vs target 55%"},
+  {id:"A008",source:"Trainer Observation",sourceIcon:"👁",store:"Panorama Mall",person:"Store team",role:"SA",gap:"Collection Experience",course:"Collection Ceremony",cid:"C04",priority:"medium",due:"2026-05-15",status:"scheduled",owner:"Mohammad Othman",sessionId:"ES04",kpi:"NPS / Loyalty",severity:1,notes:"Observed skipping collection steps during mystery shop"},
+  {id:"A009",source:"Onboarding Trigger",sourceIcon:"🆕",store:"Al Yasmin Mall",person:"New joiner",role:"SA",gap:"Onboarding",course:"Retail Team Induction",cid:"C01",priority:"critical",due:"2026-04-08",status:"scheduled",owner:"Mohammad Othman",sessionId:"ES05",kpi:"Speed to Productivity",severity:3,notes:"2 new joiners starting Apr 8 — induction must be day 1"},
+  {id:"A010",source:"KPI Trigger",sourceIcon:"📉",store:"Riyadh Park 2",person:"Store team",role:"SA",gap:"Discovery",course:"Needs Discovery & Frame Styling",cid:"C02",priority:"medium",due:"2026-05-10",status:"open",owner:"Mohammad Othman",kpi:"Conversion Rate",severity:1,notes:"Store conversion 38% vs regional avg 51%"},
+  {id:"A011",source:"Assessment Result",sourceIcon:"📊",store:"Nakheel Mall",person:"Store team",role:"Optician",gap:"Optical Knowledge",course:"OPTICORE — Block 1",cid:"C21",priority:"high",due:"2026-04-25",status:"open",owner:"Mohammad Othman",kpi:"Optical Conversion",severity:2,notes:"3 opticians overdue on OPTICORE Block 1 — avg score 61%"},
+  {id:"A012",source:"Trainer Observation",sourceIcon:"👁",store:"Al Aared Mall",person:"Store team",role:"SA",gap:"Lens Recommendation",course:"CLARIVO — Single Vision Lens",cid:"C07",priority:"medium",due:"2026-05-01",status:"assigned",owner:"Mohammad Othman",sessionId:"ES08",kpi:"Lens Upgrade Rate",severity:1,notes:"Team not confidently recommending CLARIVO"},
+  {id:"A013",source:"Certification Expiry",sourceIcon:"🎓",store:"Panorama Mall",person:"Renad Alsulami",role:"Senior SA",gap:"Cert renewal",course:"Insurance Silence Protocol",cid:"C05",priority:"medium",due:"2026-05-30",status:"open",owner:"Mohammad Othman",kpi:"Insurance Attachment Rate",severity:1,notes:"Insurance certification expires May 30"},
+  {id:"A014",source:"Manager Request",sourceIcon:"📩",store:"Nakheel Mall",person:"Store team",role:"SA",gap:"Brand Knowledge",course:"NYLO SS26 — Collection Launch",cid:"C28",priority:"low",due:"2026-05-20",status:"completed",owner:"Mohammad Othman",sessionId:"ES06",kpi:"Launch Adoption",severity:1,notes:"SM requested launch briefing before campaign"},
+  {id:"A015",source:"Assessment Result",sourceIcon:"📊",store:"Riyadh Park 2",person:"Store team",role:"SIC",gap:"Store Leadership",course:"SIC Program — Module 1",cid:"C14",priority:"high",due:"2026-04-21",status:"scheduled",owner:"Mohammad Othman",sessionId:"ES07",kpi:"Store KPI Score",severity:2,notes:"SIC failed readiness assessment"},
+];
+
+const STORE_CONVERSION = [
+  {id:"S01",name:"Al Yasmin Mall",   city:"Riyadh",region:"Central",trainer:"T01",conv:{current:38,target:55,prevWeek:41,prevMonth:44},issues:["discovery_gap","objection_handling"],teamSize:11,mandatoryPct:75,newJoiners:2,llActive:8, lastVisit:"2026-03-22",nextVisit:"2026-04-16",riskLevel:"high_risk"},
+  {id:"S03",name:"Nakheel Mall",     city:"Riyadh",region:"Central",trainer:"T01",conv:{current:42,target:55,prevWeek:40,prevMonth:43},issues:["objection_handling","product_knowledge"],teamSize:8,mandatoryPct:50,newJoiners:0,llActive:5,lastVisit:"2026-03-15",nextVisit:null,riskLevel:"high_risk"},
+  {id:"S05",name:"Riyadh Park 2",    city:"Riyadh",region:"Central",trainer:"T01",conv:{current:48,target:55,prevWeek:47,prevMonth:50},issues:["discovery_gap"],teamSize:7,mandatoryPct:57,newJoiners:1,llActive:6, lastVisit:"2026-04-01",nextVisit:null,riskLevel:"medium"},
+  {id:"S04",name:"Al Aared Mall",    city:"Riyadh",region:"Central",trainer:"T01",conv:{current:53,target:55,prevWeek:52,prevMonth:51},issues:["engagement_gap"],teamSize:6,mandatoryPct:83,newJoiners:0,llActive:6, lastVisit:"2026-03-10",nextVisit:null,riskLevel:"medium"},
+  {id:"S02",name:"Panorama Mall",    city:"Riyadh",region:"Central",trainer:"T01",conv:{current:62,target:55,prevWeek:60,prevMonth:58},issues:[],teamSize:9,mandatoryPct:100,newJoiners:0,llActive:9,lastVisit:"2026-03-18",nextVisit:null,riskLevel:"stable"},
+  {id:"S06",name:"Mall of Arabia",   city:"Riyadh",region:"Central",trainer:"T02",conv:{current:35,target:55,prevWeek:38,prevMonth:40},issues:["product_knowledge","onboarding_gap"],teamSize:12,mandatoryPct:42,newJoiners:3,llActive:7,lastVisit:"2026-03-20",nextVisit:"2026-04-11",riskLevel:"high_risk"},
+  {id:"S07",name:"Granada Mall",     city:"Riyadh",region:"Central",trainer:"T02",conv:{current:51,target:55,prevWeek:53,prevMonth:52},issues:["engagement_gap"],teamSize:8,mandatoryPct:71,newJoiners:0,llActive:7, lastVisit:"2026-03-28",nextVisit:null,riskLevel:"medium"},
+  {id:"S08",name:"Kingdom Centre",   city:"Riyadh",region:"Central",trainer:"T02",conv:{current:67,target:55,prevWeek:65,prevMonth:62},issues:[],teamSize:10,mandatoryPct:90,newJoiners:0,llActive:10,lastVisit:"2026-04-02",nextVisit:null,riskLevel:"top_performer"},
+  {id:"S09",name:"Dubai Mall",       city:"Dubai", region:"UAE",    trainer:"T03",conv:{current:44,target:58,prevWeek:46,prevMonth:48},issues:["discovery_gap","engagement_gap"],teamSize:14,mandatoryPct:64,newJoiners:1,llActive:11,lastVisit:"2026-03-25",nextVisit:"2026-04-15",riskLevel:"high_risk"},
+  {id:"S10",name:"Mall of Emirates", city:"Dubai", region:"UAE",    trainer:"T03",conv:{current:71,target:58,prevWeek:69,prevMonth:67},issues:[],teamSize:16,mandatoryPct:94,newJoiners:0,llActive:15,lastVisit:"2026-04-03",nextVisit:null,riskLevel:"top_performer"},
+  {id:"S11",name:"Red Sea Mall",     city:"Jeddah",region:"Western",trainer:"T05",conv:{current:40,target:55,prevWeek:43,prevMonth:46},issues:["onboarding_gap","discovery_gap"],teamSize:9,mandatoryPct:33,newJoiners:4,llActive:5,lastVisit:"2026-03-18",nextVisit:"2026-04-13",riskLevel:"high_risk"},
+  {id:"S12",name:"Haifa Mall",       city:"Jeddah",region:"Western",trainer:"T05",conv:{current:58,target:55,prevWeek:57,prevMonth:56},issues:[],teamSize:7,mandatoryPct:86,newJoiners:0,llActive:7, lastVisit:"2026-03-30",nextVisit:null,riskLevel:"stable"},
+];
+
+const ISSUE_META = {
+  discovery_gap:      {label:"Discovery Gap",      color:C.red, bg:C.redl, icon:"🎯",course:"C02",desc:"Team not asking enough questions to understand customer needs"},
+  objection_handling: {label:"Objection Handling", color:C.red, bg:C.redl, icon:"🛡",course:"C09",desc:"Team struggling to handle price or product objections"},
+  product_knowledge:  {label:"Product Knowledge",  color:C.amb, bg:C.ambl, icon:"📦",course:"C07",desc:"Team cannot confidently recommend lenses or frames"},
+  engagement_gap:     {label:"Engagement Gap",     color:C.amb, bg:C.ambl, icon:"💬",course:"C03",desc:"Low interaction quality — team not building rapport"},
+  onboarding_gap:     {label:"Onboarding Gap",     color:C.purp,bg:C.purpl,icon:"🆕",course:"C01",desc:"New staff not trained — creating drag on store conversion"},
+};
+
+const RISK_META = {
+  high_risk:     {label:"High Risk",    color:C.red, bg:C.redl, border:C.redb, dot:"🔴",order:0},
+  medium:        {label:"Medium",       color:C.amb, bg:C.ambl, border:C.ambb, dot:"🟡",order:1},
+  stable:        {label:"Stable",       color:C.ew,  bg:C.ewl,  border:C.ewm,  dot:"🟢",order:2},
+  top_performer: {label:"Top Performer",color:C.blue,bg:C.bluel,border:C.blueb,dot:"⭐",order:3},
+};
+
+const PRIORITY_META = {
+  critical:{label:"Critical",color:C.red, bg:C.redl, border:C.redb,dot:"🔴",order:0},
+  high:    {label:"High",    color:C.amb, bg:C.ambl, border:C.ambb,dot:"🟠",order:1},
+  medium:  {label:"Medium",  color:C.blue,bg:C.bluel,border:C.blueb,dot:"🔵",order:2},
+  low:     {label:"Low",     color:C.t3,  bg:"#F0F0EE",border:C.b2, dot:"⚪",order:3},
+};
+
+const STATUS_META = {
+  open:      {label:"Open",      color:C.red, bg:C.redl},
+  assigned:  {label:"Assigned",  color:C.amb, bg:C.ambl},
+  scheduled: {label:"Scheduled", color:C.blue,bg:C.bluel},
+  completed: {label:"Completed", color:C.ew,  bg:C.ewl},
+  cancelled: {label:"Cancelled", color:C.t3,  bg:"#EDEDEA"},
+};
+
+const TEAM = [
+  {id:"1894",nm:"Ferdos Mebrahitu",role:"Optometrist",streak:22,score:91,ll:"active",  mandatory_done:8,mandatory_total:9},
+  {id:"1767",nm:"Moaaz Mahmoud",   role:"Optician",   streak:8, score:74,ll:"active",  mandatory_done:5,mandatory_total:8},
+  {id:"3481",nm:"Karim Samir",     role:"Optician",   streak:3, score:61,ll:"inactive",mandatory_done:3,mandatory_total:8},
+  {id:"2189",nm:"Chibuzo Prince",  role:"Optometrist",streak:15,score:88,ll:"active",  mandatory_done:9,mandatory_total:9},
+  {id:"3457",nm:"Hayam Aleisawi",  role:"SA",         streak:5, score:58,ll:"active",  mandatory_done:4,mandatory_total:11},
+  {id:"2943",nm:"Feras Alsubyani", role:"SA",         streak:11,score:72,ll:"active",  mandatory_done:7,mandatory_total:11},
+  {id:"2096",nm:"Hamdy Yasser",    role:"SA",         streak:19,score:83,ll:"active",  mandatory_done:9,mandatory_total:11},
+  {id:"3512",nm:"Raghad Maghrabi", role:"SA",         streak:4, score:63,ll:"inactive",mandatory_done:4,mandatory_total:11},
+  {id:"2094",nm:"Renad Alsulami",  role:"Senior SA",  streak:14,score:79,ll:"active",  mandatory_done:6,mandatory_total:12},
+  {id:"3479",nm:"Remas Gharwi",    role:"SA",         streak:2, score:55,ll:"inactive",mandatory_done:2,mandatory_total:11},
+  {id:"1274",nm:"Ahmed Asiri",     role:"SM",         streak:28,score:94,ll:"active",  mandatory_done:7,mandatory_total:8},
+];
+
+const BLOCKED_DATES = [
+  {s:"2026-03-20",e:"2026-04-02",label:"Ramadan peak + Eid Al Fitr",type:"hard"},
+  {s:"2026-06-06",e:"2026-06-10",label:"Eid Al Adha",type:"hard"},
+  {s:"2026-09-23",e:"2026-09-23",label:"Saudi National Day",type:"peak"},
+];
+
+const ASSESSMENT_MAP = [
+  {id:"AM01",assessmentType:"Sales Capability",  gapArea:"Discovery",            severity:"high",    cid:"C02",interventionType:"session",    trainerSpec:"Retail & Sales",  escalationRule:"If score < 50, escalate to RTM"},
+  {id:"AM02",assessmentType:"Sales Capability",  gapArea:"Objection Handling",   severity:"high",    cid:"C09",interventionType:"coaching",   trainerSpec:"Retail & Sales",  escalationRule:"If repeat fail, assign senior trainer"},
+  {id:"AM03",assessmentType:"Sales Capability",  gapArea:"Insurance Confidence", severity:"critical",cid:"C05",interventionType:"session",    trainerSpec:"Retail & Sales",  escalationRule:"Mandatory — escalate if > 5 staff below 70%"},
+  {id:"AM04",assessmentType:"Product Knowledge", gapArea:"CLARIVO Progressive",  severity:"high",    cid:"C08",interventionType:"session",    trainerSpec:"CLARIVO",         escalationRule:"Reassess in 30 days"},
+  {id:"AM05",assessmentType:"Product Knowledge", gapArea:"CLARIVO Single Vision",severity:"medium",  cid:"C07",interventionType:"store_visit",trainerSpec:"CLARIVO",         escalationRule:"Coach on next store visit"},
+  {id:"AM06",assessmentType:"Optical Knowledge", gapArea:"Fitting & Measurement",severity:"high",    cid:"C26",interventionType:"session",    trainerSpec:"Optical",         escalationRule:"Block from fitting until passed"},
+  {id:"AM07",assessmentType:"Optical Knowledge", gapArea:"Contact Lenses",       severity:"medium",  cid:"C27",interventionType:"session",    trainerSpec:"Optical",         escalationRule:"Self-learning + assessment"},
+  {id:"AM08",assessmentType:"Guest Experience",  gapArea:"Collection Ceremony",  severity:"medium",  cid:"C04",interventionType:"coaching",   trainerSpec:"Retail & Sales",  escalationRule:"Mystery shopper trigger"},
+  {id:"AM09",assessmentType:"Readiness",         gapArea:"SIC Readiness",        severity:"high",    cid:"C14",interventionType:"session",    trainerSpec:"Leadership",      escalationRule:"Block promotion until passed"},
+  {id:"AM10",assessmentType:"MedTech",           gapArea:"Eye Test Conversion",  severity:"critical",cid:"C25",interventionType:"session",    trainerSpec:"Optical",         escalationRule:"Escalate to Medical Lead"},
+];
+
+// ═══════════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════════
+function pctColor(p){return p>=80?C.ew:p>=50?C.amb:C.red}
+function typeColor(t){return t==="classroom"?C.ew:t==="virtual"?C.blue:t==="instore"?C.purp:C.t3}
+function typeIcon(t){return t==="classroom"?"🏫":t==="virtual"?"💻":"🏪"}
+function typeLabel(t){return t==="classroom"?"Classroom":t==="virtual"?"Virtual":"In-store"}
+function ttColor(t){return t==="Mandatory"?C.red:t==="Targeted"?C.amb:C.blue}
+function ttBg(t){return t==="Mandatory"?C.redl:t==="Targeted"?C.ambl:C.bluel}
+function initials(name){return name.split(" ").map(n=>n[0]).join("").slice(0,2).toUpperCase()}
+function isBlocked(dateStr){
+  if(!dateStr)return null;
+  for(const b of BLOCKED_DATES){if(dateStr>=b.s&&dateStr<=b.e)return b;}
+  return null;
+}
+
+function h(tag, attrs={}, ...children){
+  const el=document.createElement(tag);
+  Object.entries(attrs).forEach(([k,v])=>{
+    if(k==="style"&&typeof v==="object") Object.assign(el.style,v);
+    else if(k.startsWith("on")&&typeof v==="function") el.addEventListener(k.slice(2).toLowerCase(),v);
+    else if(k==="class") el.className=v;
+    else if(k==="html") el.innerHTML=v;
+    else el.setAttribute(k,v);
+  });
+  children.flat(Infinity).forEach(c=>{
+    if(c==null||c===false||c===undefined)return;
+    el.appendChild(typeof c==="string"||typeof c==="number"?document.createTextNode(String(c)):c);
+  });
+  return el;
+}
+function div(attrs,...children){return h("div",attrs,...children)}
+function span(attrs,...children){return h("span",attrs,...children)}
+function btn(text,cls,onclick,extra={}){
+  const b=h("button",{class:"btn "+cls,onClick:onclick,...extra});
+  b.innerHTML=text;return b;
+}
+function tag(text,color="gray"){return span({class:`tag tag-${color}`},text)}
+function bar(val,max=100,color,height=5){
+  return div({class:"bar-track",style:{height:height+"px"}},
+    div({class:"bar-fill",style:{width:`${Math.min(100,(val/max)*100)}%`,background:color||C.ew,height:"100%"}})
+  );
+}
+function statCard(label,value,sub,color){
+  return div({class:"stat-card"},
+    div({class:"stat-label"},label),
+    div({class:"stat-value",style:{color:color||C.t1}},value),
+    sub?div({class:"stat-sub"},sub):null
+  );
+}
+function sh(title,subtitle,actionEl=null){
+  return div({class:"sh"},
+    div({},
+      div({class:"sh-title"},title),
+      subtitle?div({class:"sh-sub"},subtitle):null
+    ),
+    actionEl
+  );
+}
+function card(children,style={}){
+  const el=div({class:"card"});
+  Object.assign(el.style,style);
+  if(Array.isArray(children))children.flat(Infinity).filter(Boolean).forEach(c=>el.appendChild(typeof c==="string"?document.createTextNode(c):c));
+  else if(children)el.appendChild(typeof children==="string"?document.createTextNode(children):children);
+  return el;
+}
+function infoRow(label,value){
+  return div({style:{background:"#F8F8F6",borderRadius:"8px",padding:"8px 11px"}},
+    div({class:"section-header",style:{marginBottom:"2px"}},label),
+    div({style:{fontSize:"11px",fontWeight:"600",color:C.t1}},value||"—")
+  );
+}
+function pillBtn(text, active, onclick, activeColor=null){
+  const el=h("button",{class:`pill-btn${active?" active":""}`,onClick:onclick});
+  if(active&&activeColor){el.style.background=activeColor+"18";el.style.borderColor=activeColor;el.style.color=activeColor;}
+  el.textContent=text;
+  return el;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TOP BAR
+// ═══════════════════════════════════════════════════════════════════
+function renderTopBar(){
+  const view=VIEWS[STATE.viewIdx];
+  const rm=ROLES_META[view.roleKey];
+  const openActions=STATE.actions.filter(a=>["open","assigned"].includes(a.status)).length;
+  const critActions=STATE.actions.filter(a=>a.priority==="critical"&&a.status==="open").length;
+
+  const bar_el=div({style:{background:"#fff",borderBottom:`1px solid ${C.b1}`,height:"50px",display:"flex",alignItems:"center",padding:"0 18px",flexShrink:"0",gap:"0"}});
+
+  // Logo
+  bar_el.appendChild(div({style:{fontSize:"16px",fontWeight:"800",color:C.ewd,letterSpacing:"-.6px",marginRight:"14px",display:"flex",alignItems:"center",gap:"5px",flexShrink:"0"}},
+    div({style:{width:"7px",height:"7px",borderRadius:"50%",background:C.ew}}),
+    "eyewa ",span({style:{fontSize:"9px",fontWeight:"500",color:C.t3,marginLeft:"1px"}},"ECIP")
+  ));
+
+  // Role switcher
+  const rSwitch=div({style:{display:"flex",gap:"3px",background:"#F0F0EE",borderRadius:"8px",padding:"3px",flexShrink:"0",marginRight:"12px"}});
+  VIEWS.forEach((v,i)=>{
+    const roleMeta=ROLES_META[v.roleKey];
+    const b=h("button",{
+      class:"btn",
+      onClick:()=>{STATE.viewIdx=i;STATE.tab=VIEWS[i].tabs[0].id;STATE.showCreateSession=false;STATE.showAddCourse=false;render();},
+      style:{padding:"3px 10px",borderRadius:"6px",fontSize:"10px",fontWeight:"700",border:"none",
+        background:STATE.viewIdx===i?"#fff":"transparent",
+        color:STATE.viewIdx===i?roleMeta.color:C.t3,
+        boxShadow:STATE.viewIdx===i?"0 1px 3px rgba(0,0,0,.08)":"none"}
+    },v.label);
+    rSwitch.appendChild(b);
+  });
+  bar_el.appendChild(rSwitch);
+
+  // Tab nav
+  const tabNav=div({style:{display:"flex",height:"50px",overflowX:"auto",flex:"1"}});
+  view.tabs.forEach(t=>{
+    const isActive=STATE.tab===t.id&&!STATE.showCreateSession&&!STATE.showAddCourse;
+    const isActions=t.id==="actions";
+    const tabEl=h("button",{
+      class:`nav-tab${isActive?" active":""}`,
+      onClick:()=>{STATE.tab=t.id;STATE.showCreateSession=false;STATE.showAddCourse=false;render();}
+    },t.l);
+    if(isActions&&openActions>0){
+      const badge=span({style:{fontSize:"9px",fontWeight:"800",padding:"1px 5px",borderRadius:"10px",background:critActions>0?C.red:C.amb,color:"#fff",lineHeight:"1.4"}},String(openActions));
+      tabEl.appendChild(badge);
+    }
+    tabNav.appendChild(tabEl);
+  });
+  bar_el.appendChild(tabNav);
+
+  // User pill
+  const userArea=div({style:{marginLeft:"auto",display:"flex",alignItems:"center",gap:"8px",flexShrink:"0",paddingLeft:"12px"}});
+  userArea.appendChild(div({style:{background:rm.bg,border:`1px solid ${rm.color}40`,borderRadius:"20px",padding:"3px 10px",fontSize:"10px",color:rm.color,fontWeight:"700"}},view.pill));
+  userArea.appendChild(div({style:{width:"28px",height:"28px",borderRadius:"50%",background:rm.color,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"10px",fontWeight:"800"}},view.av));
+  bar_el.appendChild(userArea);
+
+  return bar_el;
+}
+</script>
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// CONVERSION ENGINE
+// ═══════════════════════════════════════════════════════════════════
+function renderConversionEngine(){
+  const regions=[...new Set(STORE_CONVERSION.map(s=>s.region))];
+  const filtered=STORE_CONVERSION
+    .filter(s=>STATE.convFilterRegion==="all"||s.region===STATE.convFilterRegion)
+    .filter(s=>STATE.convFilterRisk==="all"||s.riskLevel===STATE.convFilterRisk)
+    .sort((a,b)=>a.conv.current-b.conv.current);
+  const highRisk=STORE_CONVERSION.filter(s=>s.riskLevel==="high_risk").length;
+  const belowTarget=STORE_CONVERSION.filter(s=>s.conv.current<s.conv.target).length;
+  const avgConv=Math.round(STORE_CONVERSION.reduce((a,s)=>a+s.conv.current,0)/STORE_CONVERSION.length);
+  const topPerf=STORE_CONVERSION.filter(s=>s.riskLevel==="top_performer").length;
+  const wrap=div({});
+
+  // Header
+  const hdr=div({style:{background:`linear-gradient(135deg,${C.ewd} 0%,#145a3c 100%)`,borderRadius:"12px",padding:"16px 20px",color:"#fff",marginBottom:"14px",display:"flex",alignItems:"flex-start",justifyContent:"space-between"}});
+  hdr.appendChild(div({},
+    div({style:{fontSize:"11px",fontWeight:"700",opacity:".7",textTransform:"uppercase",letterSpacing:".08em",marginBottom:"4px"}},"Conversion Performance Engine"),
+    div({style:{fontSize:"22px",fontWeight:"800",marginBottom:"2px"}},"Week of Apr 14–18, 2026"),
+    div({style:{fontSize:"11px",opacity:".8"}},`Primary KPI: Store conversion · Target 55% · ${belowTarget} stores below target`)
+  ));
+  const stats=div({style:{display:"flex",gap:"8px",flexShrink:"0"}});
+  [[avgConv+"%","Avg conversion",avgConv>=55?C.ewm:C.ambb],[highRisk+" stores","High risk","#EEBCBC"],[topPerf+" stores","Top performers",C.ewm]].forEach(([v,l,col])=>{
+    stats.appendChild(div({style:{textAlign:"center",background:"rgba(255,255,255,.12)",borderRadius:"9px",padding:"8px 14px"}},
+      div({style:{fontSize:"18px",fontWeight:"800",color:col}},v),
+      div({style:{fontSize:"9px",opacity:".7",marginTop:"1px"}},l)
+    ));
+  });
+  hdr.appendChild(stats);
+  wrap.appendChild(hdr);
+
+  // High risk alert
+  if(highRisk>0){
+    const alert=div({style:{background:C.redl,border:`1px solid ${C.redb}`,borderRadius:"10px",padding:"11px 15px",marginBottom:"12px",display:"flex",alignItems:"center",gap:"10px"}});
+    alert.appendChild(span({style:{fontSize:"18px",flexShrink:"0"}},"🔴"));
+    alert.appendChild(div({style:{flex:"1"}},
+      div({style:{fontSize:"12px",fontWeight:"700",color:C.red}},`${highRisk} stores are high risk — conversion >10pts below target`),
+      div({style:{fontSize:"10px",color:C.red,opacity:".8",marginTop:"2px"}},
+        STORE_CONVERSION.filter(s=>s.riskLevel==="high_risk").map(s=>`${s.name} (${s.conv.current}%)`).join(" · ")
+      )
+    ));
+    alert.appendChild(btn("View all →","btn-sm btn-danger",()=>{STATE.convFilterRisk="high_risk";render();}));
+    wrap.appendChild(alert);
+  }
+
+  // Filters
+  const filters=div({style:{display:"flex",gap:"7px",alignItems:"center",marginBottom:"12px",flexWrap:"wrap"}});
+  filters.appendChild(span({style:{fontSize:"10px",fontWeight:"700",color:C.t3}},"REGION"));
+  ["all",...regions].forEach(r=>{
+    filters.appendChild(pillBtn(r==="all"?"All":r,STATE.convFilterRegion===r,()=>{STATE.convFilterRegion=r;render();}));
+  });
+  filters.appendChild(div({style:{width:"1px",height:"20px",background:C.b2}}));
+  filters.appendChild(span({style:{fontSize:"10px",fontWeight:"700",color:C.t3}},"RISK"));
+  [{k:"all",l:"All"},{k:"high_risk",l:"🔴 High Risk"},{k:"medium",l:"🟡 Medium"},{k:"stable",l:"🟢 Stable"},{k:"top_performer",l:"⭐ Top Performer"}].forEach(({k,l})=>{
+    const rm=RISK_META[k];
+    filters.appendChild(pillBtn(l,STATE.convFilterRisk===k,()=>{STATE.convFilterRisk=k;render();},rm?.color));
+  });
+  wrap.appendChild(filters);
+
+  // Store cards
+  filtered.forEach(store=>{
+    const rm=RISK_META[store.riskLevel];
+    const gap=store.conv.target-store.conv.current;
+    const trend=store.conv.current-store.conv.prevWeek;
+    const trainer=STATE.trainers.find(t=>t.id===store.trainer);
+    const isExpanded=STATE.convExpandedStore===store.id;
+
+    const storeCard=div({class:"store-card",style:{background:"#fff",border:`1px solid ${store.riskLevel==="high_risk"?C.redb:C.b1}`,borderRadius:"12px",overflow:"hidden",borderLeft:`4px solid ${rm.color}`,marginBottom:"10px",transition:"box-shadow .15s"}});
+
+    // Main row
+    const mainRow=div({style:{padding:"14px 16px",cursor:"pointer",display:"flex",alignItems:"flex-start",gap:"14px"},onClick:()=>{STATE.convExpandedStore=isExpanded?null:store.id;render();}});
+
+    // Dial
+    mainRow.appendChild(div({style:{flexShrink:"0",textAlign:"center",background:rm.bg,borderRadius:"10px",padding:"10px 14px",minWidth:"72px"}},
+      div({style:{fontSize:"26px",fontWeight:"900",color:rm.color,lineHeight:"1",fontFamily:"monospace"}},store.conv.current+"%"),
+      div({style:{fontSize:"8px",fontWeight:"700",color:rm.color,textTransform:"uppercase",marginTop:"2px"}},"conv."),
+      div({style:{fontSize:"9px",color:rm.color,marginTop:"2px",fontWeight:"600"}},(trend>=0?"▲":"▼")+Math.abs(trend)+"% WoW")
+    ));
+
+    // Info
+    const info=div({style:{flex:"1",minWidth:"0"}});
+    const nameRow=div({style:{display:"flex",alignItems:"center",gap:"7px",marginBottom:"4px",flexWrap:"wrap"}});
+    nameRow.appendChild(span({style:{fontSize:"13px",fontWeight:"800",color:C.t1}},store.name));
+    nameRow.appendChild(span({class:`tag`,style:{background:rm.bg,color:rm.color,border:`1px solid ${rm.border}`,fontSize:"9px"}},`${rm.dot} ${rm.label}`));
+    nameRow.appendChild(span({style:{fontSize:"10px",color:C.t3}},`${store.city} · ${store.region}`));
+    info.appendChild(nameRow);
+
+    // Target bar
+    const barWrap=div({style:{marginBottom:"8px"}});
+    const barLbl=div({style:{display:"flex",justifyContent:"space-between",marginBottom:"3px"}});
+    barLbl.appendChild(span({style:{fontSize:"9px",color:C.t3}},`Conversion vs target (${store.conv.target}%)`));
+    barLbl.appendChild(span({style:{fontSize:"9px",fontWeight:"700",color:gap>0?C.red:C.ew}},gap>0?`${gap}pts below target`:"Above target"));
+    barWrap.appendChild(barLbl);
+    const barTrack=div({style:{height:"6px",background:"#E8E8E6",borderRadius:"6px",overflow:"hidden",position:"relative"}});
+    barTrack.appendChild(div({style:{height:"100%",width:`${(store.conv.current/70)*100}%`,background:rm.color,borderRadius:"6px"}}));
+    barTrack.appendChild(div({style:{position:"absolute",top:"0",left:`${(store.conv.target/70)*100}%`,width:"2px",height:"100%",background:C.t2}}));
+    barWrap.appendChild(barTrack);
+    info.appendChild(barWrap);
+
+    // Issue tags
+    const issueTags=div({style:{display:"flex",gap:"5px",flexWrap:"wrap",marginBottom:"6px"}});
+    store.issues.forEach(issue=>{
+      const im=ISSUE_META[issue];
+      issueTags.appendChild(span({style:{fontSize:"9px",fontWeight:"700",padding:"2px 8px",borderRadius:"20px",background:im?.bg,color:im?.color}},`${im?.icon} ${im?.label}`));
+    });
+    if(!store.issues.length)issueTags.appendChild(span({style:{fontSize:"9px",color:C.t3}},"No issues detected"));
+    info.appendChild(issueTags);
+
+    // Meta
+    const meta=div({style:{display:"flex",gap:"12px",fontSize:"9px",color:C.t3,flexWrap:"wrap"}});
+    [`👥 ${store.teamSize} staff`,`✅ ${store.mandatoryPct}% mandatory`,store.newJoiners>0?`🆕 ${store.newJoiners} new joiners`:null,`📲 ${store.llActive}/${store.teamSize} LearnLab`,`🧑‍🏫 ${trainer?.name||"Unassigned"}`].filter(Boolean).forEach(m=>{
+      const mEl=span({},m);
+      if(m.includes("new joiners"))mEl.style.cssText="color:"+C.purp+";font-weight:700";
+      meta.appendChild(mEl);
+    });
+    info.appendChild(meta);
+    mainRow.appendChild(info);
+
+    // Actions
+    const actWrap=div({style:{flexShrink:"0",display:"flex",flexDirection:"column",gap:"5px"},onClick:e=>e.stopPropagation()});
+    if(store.riskLevel==="high_risk"||store.riskLevel==="medium"){
+      actWrap.appendChild(btn("→ Create actions","btn-sm btn-primary",()=>{
+        // derive and add actions
+        store.issues.forEach((issue,i)=>{
+          const im=ISSUE_META[issue];
+          const course=STATE.courses.find(c=>c.id===im?.course);
+          const tr=STATE.trainers.find(t=>t.id===store.trainer);
+          const gap2=store.conv.target-store.conv.current;
+          const newId=`CA${store.id}_${i}_${Date.now()}`;
+          if(!STATE.actions.find(a=>a.store===store.name&&a.issueType===issue)){
+            STATE.actions.unshift({id:newId,source:"KPI Trigger",sourceIcon:"📉",store:store.name,region:store.region,person:"Store team",role:"SA",issueType:issue,conversionCurrent:store.conv.current,conversionTarget:store.conv.target,gap:im?.label||issue,course:course?.name||"—",cid:im?.course,priority:gap2>15?"critical":"high",due:"2026-04-25",status:"open",owner:tr?.name||"Unassigned",trainerId:store.trainer,kpi:"Conversion Rate",severity:gap2>15?3:2,notes:im?.desc||""});
+          }
+        });
+        STATE.tab="actions";render();
+      }));
+    }
+    actWrap.appendChild(btn(isExpanded?"Collapse":"Details","btn-sm btn-ghost",()=>{STATE.convExpandedStore=isExpanded?null:store.id;render();}));
+    mainRow.appendChild(actWrap);
+    storeCard.appendChild(mainRow);
+
+    // Expanded detail
+    if(isExpanded){
+      const detail=div({style:{borderTop:`1px solid ${C.b1}`,padding:"14px 16px",background:"#FAFAF8"}});
+      const statsRow=div({style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"10px",marginBottom:"12px"}});
+      [[store.conv.current+"%","This week",rm.color],[store.conv.prevWeek+"%","Last week",C.t2],[store.conv.prevMonth+"%","Last month avg",C.t2]].forEach(([v,l,col])=>{
+        statsRow.appendChild(div({style:{background:"#fff",borderRadius:"9px",padding:"9px 12px",textAlign:"center",border:`1px solid ${C.b1}`}},
+          div({style:{fontSize:"18px",fontWeight:"800",color:col,fontFamily:"monospace"}},v),
+          div({style:{fontSize:"9px",color:C.t3,marginTop:"2px"}},l)
+        ));
+      });
+      detail.appendChild(statsRow);
+
+      if(store.issues.length>0){
+        detail.appendChild(div({class:"section-header"},"Why conversion is low"));
+        store.issues.forEach(issue=>{
+          const im=ISSUE_META[issue];
+          const course=STATE.courses.find(c=>c.id===im?.course);
+          const issueCard=div({style:{background:"#fff",border:`1px solid ${im?.color}30`,borderRadius:"9px",padding:"10px 12px",marginBottom:"6px",borderLeft:`3px solid ${im?.color}`}});
+          issueCard.appendChild(div({style:{fontSize:"11px",fontWeight:"700",color:im?.color,marginBottom:"2px"}},`${im?.icon} ${im?.label}`));
+          issueCard.appendChild(div({style:{fontSize:"10px",color:C.t2,marginTop:"2px"}},im?.desc));
+          if(course)issueCard.appendChild(div({style:{fontSize:"10px",color:C.t3,marginTop:"3px"}},`→ Recommended: `,span({style:{fontWeight:"700",color:C.ewd}},course.name)));
+          detail.appendChild(issueCard);
+        });
+      }
+
+      const visitRow=div({style:{display:"flex",gap:"10px",fontSize:"10px",marginTop:"8px"}});
+      [[store.lastVisit||"Not recorded","Last trainer visit",false],[store.nextVisit||"⚠ Not scheduled","Next planned visit",!store.nextVisit]].forEach(([v,l,isAlert])=>{
+        visitRow.appendChild(div({style:{flex:"1",background:"#fff",borderRadius:"8px",padding:"8px 11px",border:`1px solid ${isAlert?C.redb:store.nextVisit&&l.includes("Next")?C.ewm:C.b1}`}},
+          div({class:"section-header"},l),
+          div({style:{fontWeight:"600",color:isAlert?C.red:l.includes("Next")&&store.nextVisit?C.ewd:C.t1}},v)
+        ));
+      });
+      detail.appendChild(visitRow);
+      storeCard.appendChild(detail);
+    }
+    wrap.appendChild(storeCard);
+  });
+  return wrap;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TRAINING ACTIONS
+// ═══════════════════════════════════════════════════════════════════
+function renderActions(){
+  const wrap=div({});
+  const {actionsFilterStatus:fs,actionsFilterPriority:fp,actionsFilterStore:fstore,actionsFilterSource:fsrc,actionsSortBy:sortBy}=STATE;
+
+  const sources=[...new Set(STATE.actions.map(a=>a.source))];
+  const stores=[...new Set(STATE.actions.map(a=>a.store))];
+  const open=STATE.actions.filter(a=>a.status==="open").length;
+  const critical=STATE.actions.filter(a=>a.priority==="critical"&&a.status!=="completed"&&a.status!=="cancelled").length;
+  const scheduled=STATE.actions.filter(a=>a.status==="scheduled").length;
+  const completed=STATE.actions.filter(a=>a.status==="completed").length;
+  const overdue=STATE.actions.filter(a=>a.status!=="completed"&&a.status!=="cancelled"&&a.due<"2026-04-18").length;
+
+  // Stats
+  const statsRow=div({style:{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:"10px",marginBottom:"14px"}});
+  [[open,"Open actions","need scheduling",open>0?C.red:C.ew],[critical,"Critical","unresolved",critical>0?C.red:C.ew],[scheduled,"Scheduled","sessions linked",C.blue],[completed,"Completed","this month",C.ew],[overdue,"Overdue","past due date",overdue>0?C.red:C.ew]].forEach(([v,l,s,col])=>statsRow.appendChild(statCard(l,String(v),s,col)));
+  wrap.appendChild(statsRow);
+
+  // Critical banner
+  if(critical>0){
+    const banner=div({style:{background:C.redl,border:`1px solid ${C.redb}`,borderRadius:"10px",padding:"10px 14px",marginBottom:"12px",display:"flex",alignItems:"center",gap:"10px"}});
+    banner.appendChild(span({style:{fontSize:"18px"}},"🔴"));
+    banner.appendChild(div({style:{flex:"1"}},
+      div({style:{fontSize:"12px",fontWeight:"700",color:C.red}},`${critical} critical action${critical>1?"s":""} require immediate attention`),
+      div({style:{fontSize:"10px",color:C.red,opacity:".8",marginTop:"2px"}},STATE.actions.filter(a=>a.priority==="critical"&&a.status==="open").map(a=>`${a.person} · ${a.gap}`).join(" · "))
+    ));
+    banner.appendChild(btn("View critical →","btn-sm btn-danger",()=>{STATE.actionsFilterPriority="critical";STATE.actionsFilterStatus="open";render();}));
+    wrap.appendChild(banner);
+  }
+
+  // Filters bar
+  const filtersCard=card([],{marginBottom:"12px",padding:"12px 14px"});
+  const filtersRow=div({style:{display:"flex",gap:"7px",alignItems:"center",flexWrap:"wrap"}});
+  filtersRow.appendChild(span({style:{fontSize:"10px",fontWeight:"700",color:C.t3,marginRight:"2px"}},"STATUS"));
+  [{v:"open",l:"🔴 Open"},{v:"assigned",l:"🟠 Assigned"},{v:"scheduled",l:"🔵 Scheduled"},{v:"completed",l:"✅ Completed"},{v:"all",l:"All"}].forEach(({v,l})=>{
+    filtersRow.appendChild(pillBtn(l,fs===v,()=>{STATE.actionsFilterStatus=v;render();}));
+  });
+  filtersRow.appendChild(div({style:{width:"1px",height:"20px",background:C.b2,margin:"0 4px"}}));
+  filtersRow.appendChild(span({style:{fontSize:"10px",fontWeight:"700",color:C.t3,marginRight:"2px"}},"PRIORITY"));
+  ["all","critical","high","medium","low"].forEach(p=>{
+    const pm=PRIORITY_META[p];
+    filtersRow.appendChild(pillBtn(p==="all"?"All":(pm.dot+" "+pm.label),fp===p,()=>{STATE.actionsFilterPriority=p;render();},pm?.color));
+  });
+  // Selects on right
+  const selRight=div({style:{marginLeft:"auto",display:"flex",gap:"7px",alignItems:"center"}});
+  const selStyle="background:#fff;border:1px solid "+C.b1+";border-radius:7px;padding:5px 28px 5px 8px;font-size:11px;outline:none";
+  const storeSelect=h("select",{style:{cssText:selStyle},onChange:e=>{STATE.actionsFilterStore=e.target.value;render();}});
+  [["all","All stores"],...stores.map(s=>[s,s])].forEach(([v,l])=>{const o=h("option",{value:v},l);if(v===fstore)o.selected=true;storeSelect.appendChild(o);});
+  const srcSelect=h("select",{style:{cssText:selStyle},onChange:e=>{STATE.actionsFilterSource=e.target.value;render();}});
+  [["all","All sources"],...sources.map(s=>[s,s])].forEach(([v,l])=>{const o=h("option",{value:v},l);if(v===fsrc)o.selected=true;srcSelect.appendChild(o);});
+  const sortSelect=h("select",{style:{cssText:selStyle},onChange:e=>{STATE.actionsSortBy=e.target.value;render();}});
+  [["priority","Sort: Priority"],["due","Sort: Due date"],["store","Sort: Store"]].forEach(([v,l])=>{const o=h("option",{value:v},l);if(v===sortBy)o.selected=true;sortSelect.appendChild(o);});
+  selRight.appendChild(storeSelect);selRight.appendChild(srcSelect);selRight.appendChild(sortSelect);
+  filtersRow.appendChild(selRight);
+  filtersCard.appendChild(filtersRow);
+  wrap.appendChild(filtersCard);
+
+  // Action list
+  let filtered=STATE.actions
+    .filter(a=>fs==="all"||a.status===fs)
+    .filter(a=>fp==="all"||a.priority===fp)
+    .filter(a=>fstore==="all"||a.store===fstore)
+    .filter(a=>fsrc==="all"||a.source===fsrc)
+    .sort((a,b)=>{
+      if(sortBy==="priority")return (PRIORITY_META[a.priority]?.order??9)-(PRIORITY_META[b.priority]?.order??9);
+      if(sortBy==="due")return a.due.localeCompare(b.due);
+      return a.store.localeCompare(b.store);
+    });
+
+  if(!filtered.length){
+    wrap.appendChild(card(div({style:{textAlign:"center",color:C.t3,padding:"36px",fontSize:"12px"}},"No actions match current filters")));
+    return wrap;
+  }
+
+  const listWrap=div({style:{display:"grid",gap:"8px"}});
+  filtered.forEach(action=>{
+    const pm=PRIORITY_META[action.priority];
+    const sm2=STATUS_META[action.status];
+    const isOverdue=action.status!=="completed"&&action.status!=="cancelled"&&action.due<"2026-04-18";
+    const row=div({class:"action-row",style:{background:"#fff",border:`1px solid ${action.priority==="critical"&&action.status==="open"?C.redb:C.b1}`,borderRadius:"12px",padding:"13px 15px",cursor:"pointer",borderLeft:`4px solid ${pm.color}`,transition:"box-shadow .15s"},onClick:()=>{STATE.selAction=action;render();}});
+    const inner=div({style:{display:"flex",alignItems:"flex-start",gap:"12px"}});
+
+    // Icon + priority label
+    inner.appendChild(div({style:{flexShrink:"0",display:"flex",flexDirection:"column",alignItems:"center",gap:"4px",paddingTop:"2px"}},
+      span({style:{fontSize:"16px"}},action.sourceIcon),
+      span({style:{fontSize:"8px",fontWeight:"700",color:pm.color,textTransform:"uppercase",writingMode:"vertical-lr",transform:"rotate(180deg)",lineHeight:"1"}},pm.label)
+    ));
+
+    // Content
+    const content=div({style:{flex:"1",minWidth:"0"}});
+    const titleRow=div({style:{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:"10px",marginBottom:"5px"}});
+    const titleLeft=div({});
+    const titleMain=div({style:{fontSize:"12px",fontWeight:"800",color:C.t1,marginBottom:"2px"}},action.gap);
+    if(isOverdue)titleMain.appendChild(span({style:{marginLeft:"7px",fontSize:"9px",fontWeight:"700",color:C.red,background:C.redl,padding:"1px 6px",borderRadius:"10px"}},"OVERDUE"));
+    titleLeft.appendChild(titleMain);
+    titleLeft.appendChild(div({style:{fontSize:"10px",color:C.t3}},`${action.store} · ${action.person} · ${action.role} · Due ${action.due}`));
+    titleRow.appendChild(titleLeft);
+    const badges=div({style:{display:"flex",gap:"5px",flexWrap:"wrap",flexShrink:"0"}});
+    badges.appendChild(span({class:"tag",style:{background:pm.bg,color:pm.color}},`${pm.dot} ${pm.label}`));
+    badges.appendChild(span({class:"tag",style:{background:sm2.bg,color:sm2.color}},sm2.label));
+    titleRow.appendChild(badges);
+    content.appendChild(titleRow);
+
+    // Course + KPI
+    const courseRow=div({style:{display:"flex",gap:"10px",alignItems:"center",marginBottom:"6px"}});
+    courseRow.appendChild(div({style:{fontSize:"10px",color:C.t2}},`📚 ${action.course}`));
+    courseRow.appendChild(span({class:"tag tag-gray",style:{fontSize:"9px"}},`📊 ${action.kpi}`));
+    content.appendChild(courseRow);
+
+    // Notes
+    if(action.notes)content.appendChild(div({style:{fontSize:"10px",color:C.t3,background:"#F8F8F6",borderRadius:"7px",padding:"5px 9px",marginBottom:"6px"}},action.notes));
+
+    // Quick actions
+    const qActions=div({style:{display:"flex",gap:"6px"},onClick:e=>e.stopPropagation()});
+    if(action.status==="open"){
+      qActions.appendChild(btn("+ Create session","btn-sm btn-primary",()=>{STATE.showCreateSession=true;STATE.prefillStore={name:action.store};render();}));
+      qActions.appendChild(btn("Assign","btn-sm btn-secondary",()=>{action.status="assigned";render();}));
+    }
+    if(action.status==="assigned")qActions.appendChild(btn("Mark Scheduled","btn-sm btn-secondary",()=>{action.status="scheduled";render();}));
+    if(action.status==="scheduled")qActions.appendChild(btn("Mark Completed","btn-sm btn-primary",()=>{action.status="completed";render();}));
+    content.appendChild(qActions);
+    inner.appendChild(content);
+    row.appendChild(inner);
+    listWrap.appendChild(row);
+  });
+  wrap.appendChild(listWrap);
+  return wrap;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SESSIONS MANAGER
+// ═══════════════════════════════════════════════════════════════════
+function renderSessions(){
+  const wrap=div({});
+  const hdr=div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"14px"}});
+  hdr.appendChild(div({},div({style:{fontSize:"15px",fontWeight:"800"}},"My Sessions"),div({style:{fontSize:"10px",color:C.t3,marginTop:"1px"}},STATE.sessions.length+" total · "+STATE.sessions.filter(s=>s.status==="open"||s.status==="planned").length+" upcoming")));
+  hdr.appendChild(btn("+ New session","btn-primary",()=>{STATE.showCreateSession=true;STATE.prefillStore=null;render();}));
+  wrap.appendChild(hdr);
+
+  // Stats
+  const statsRow=div({style:{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:"10px",marginBottom:"14px"}});
+  [["Upcoming",STATE.sessions.filter(s=>["open","planned"].includes(s.status)).length,"",""],["Completed",STATE.sessions.filter(s=>s.status==="completed").length,"",""],["Total enrolled",STATE.sessions.reduce((a,s)=>a+s.reg,0)+" staff","",""],["Pending sync",STATE.sessions.filter(s=>s.sync==="not_synced"&&s.status==="completed").length,"to LearnLab",""]].forEach(([l,v,s])=>statsRow.appendChild(statCard(l,String(v),s)));
+  wrap.appendChild(statsRow);
+
+  // Session list
+  [...STATE.sessions].sort((a,b)=>b.date.localeCompare(a.date)).forEach(s=>{
+    const sCard=div({class:"card",style:{marginBottom:"8px",borderLeft:`4px solid ${typeColor(s.type)}`}});
+    const row=div({style:{display:"flex",alignItems:"flex-start",gap:"12px"}});
+    row.appendChild(div({style:{flexShrink:"0",background:typeColor(s.type)+"18",borderRadius:"9px",padding:"8px 10px",textAlign:"center",minWidth:"50px"}},
+      span({style:{fontSize:"20px"}},typeIcon(s.type)),
+      div({style:{fontSize:"8px",fontWeight:"700",color:typeColor(s.type),marginTop:"2px"}},typeLabel(s.type))
+    ));
+    const info=div({style:{flex:"1",minWidth:"0"}});
+    const r1=div({style:{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:"4px"}});
+    r1.appendChild(div({style:{fontSize:"12px",fontWeight:"800",color:C.t1}},s.course));
+    const badges=div({style:{display:"flex",gap:"5px",flexShrink:"0"}});
+    badges.appendChild(span({class:"tag",style:{background:ttBg(s.trainingType),color:ttColor(s.trainingType),fontSize:"9px"}},s.trainingType));
+    badges.appendChild(span({class:`tag tag-${s.status==="completed"?"green":s.status==="open"?"blue":"gray"}`,style:{fontSize:"9px"}},s.status));
+    if(s.sync==="not_synced"&&s.status==="completed")badges.appendChild(span({class:"tag tag-amber",style:{fontSize:"9px"}},"⚠ Sync pending"));
+    r1.appendChild(badges);
+    info.appendChild(r1);
+    info.appendChild(div({style:{fontSize:"10px",color:C.t3,marginBottom:"4px"}},`📅 ${s.date} · ${s.time} · ${s.dur} · 📍 ${s.store} · 👥 ${s.reg}/${s.cap} enrolled`));
+    if(s.assess)info.appendChild(span({class:"tag tag-amber",style:{fontSize:"9px",marginBottom:"4px"}},`Assessment required · Pass score: ${s.passScore}%`));
+    const qBtns=div({style:{display:"flex",gap:"6px",marginTop:"6px"}});
+    if(s.status==="open")qBtns.appendChild(btn("Mark Delivered","btn-sm btn-primary",()=>{s.status="delivered";render();}));
+    if(s.status==="planned")qBtns.appendChild(btn("Open Enrollment","btn-sm btn-secondary",()=>{s.status="open";render();}));
+    if(s.status==="delivered")qBtns.appendChild(btn("✅ Mark Complete","btn-sm btn-primary",()=>{s.status="completed";render();}));
+    info.appendChild(qBtns);
+    row.appendChild(info);
+    sCard.appendChild(row);
+    wrap.appendChild(sCard);
+  });
+  return wrap;
+}
+</script>
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// CREATE SESSION
+// ═══════════════════════════════════════════════════════════════════
+const CS = {cid:"",sType:"instore",store:"",date:"",time:"09:00",dur:"2h",cap:"",tType:"",roles:[],assess:false,pass:"",done:false};
+function resetCS(){Object.assign(CS,{cid:"",sType:"instore",store:STATE.prefillStore?.name||"",date:"",time:"09:00",dur:"2h",cap:"",tType:"",roles:[],assess:false,pass:"",done:false});}
+
+function renderCreateSession(){
+  if(CS.done){
+    return card(div({style:{textAlign:"center",padding:"36px 20px"}},
+      div({style:{fontSize:"44px",marginBottom:"12px"}},"✅"),
+      div({style:{fontSize:"16px",fontWeight:"700",color:C.ewd,marginBottom:"5px"}},"Session created"),
+      div({style:{fontSize:"11px",color:C.t2,marginBottom:"22px"}},"Visible in My Sessions and the training calendar for your stores"),
+      btn("Create another","btn-primary btn",()=>{resetCS();render();})," ",
+      btn("Back to Sessions","btn-secondary btn",()=>{STATE.showCreateSession=false;resetCS();STATE.tab="sessions";render();})
+    ));
+  }
+  const course=STATE.courses.find(c=>c.id===CS.cid);
+  const bo=CS.date?isBlocked(CS.date):null;
+  const allRoles=["SA","Junior SA","Senior SA","Optician","Optometrist","SIC","SM"];
+  const canSave=CS.cid&&CS.store&&CS.date&&bo?.type!=="hard";
+  const stores=["Al Yasmin Mall","Nakheel Mall","Panorama Mall","Al Aared Mall","Riyadh Park 2","Mall of Arabia","Granada Mall","Kingdom Centre","Dubai Mall","Mall of Emirates","Red Sea Mall","Haifa Mall","Virtual — All Central","Virtual — All Regions","Riyadh Office"];
+
+  const wrap=div({});
+  const hdr=div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"16px"}});
+  hdr.appendChild(div({},div({style:{fontSize:"15px",fontWeight:"800"}},"Create session"),div({style:{fontSize:"10px",color:C.t3,marginTop:"1px"}},"4 required fields · everything else auto-fills from the course")));
+  hdr.appendChild(btn("Cancel","btn-ghost",()=>{STATE.showCreateSession=false;resetCS();render();}));
+  wrap.appendChild(hdr);
+
+  const grid=div({style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"16px"}});
+
+  // LEFT COLUMN
+  const left=div({});
+
+  // Required fields card
+  const req=card([],{marginBottom:"12px"});
+  req.appendChild(div({style:{display:"flex",alignItems:"center",gap:"6px",marginBottom:"12px"}},
+    div({style:{width:"20px",height:"20px",borderRadius:"50%",background:C.ewd,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"9px",fontWeight:"800"}},"1"),
+    div({style:{fontSize:"12px",fontWeight:"700",color:C.ewd}},"Required fields")
+  ));
+
+  // Course select
+  req.appendChild(div({class:"fl fl-req",style:{marginBottom:"5px"}},"Course"));
+  const courseSelect=h("select",{class:"input",style:{borderColor:!CS.cid?C.redb:C.b1},onChange:e=>{CS.cid=e.target.value;const c=STATE.courses.find(x=>x.id===e.target.value);if(c){CS.cap=String(c.cap);CS.tType=c.type;CS.roles=[...c.roles];CS.assess=c.assess||false;CS.pass=c.passScore?String(c.passScore):"";}render();}});
+  courseSelect.appendChild(h("option",{value:""},"Select a course..."));
+  PROGRAMS.forEach(p=>{
+    const og=h("optgroup",{label:p.name});
+    STATE.courses.filter(c=>c.pid===p.id).forEach(c=>{const o=h("option",{value:c.id},c.name);if(c.id===CS.cid)o.selected=true;og.appendChild(o);});
+    courseSelect.appendChild(og);
+  });
+  req.appendChild(courseSelect);
+  if(course)req.appendChild(div({style:{marginTop:"6px",background:C.ewl,borderRadius:"7px",padding:"6px 9px",fontSize:"10px",color:C.ewd}},`✓ ${PROGRAMS.find(p=>p.id===course.pid)?.name} · ${course.topic} / ${course.sub}`));
+
+  req.appendChild(div({style:{marginBottom:"10px"}}));
+
+  // Store select
+  req.appendChild(div({class:"fl fl-req"},"Store / Location"));
+  const storeSelect=h("select",{class:"input",style:{borderColor:!CS.store?C.redb:C.b1},onChange:e=>{CS.store=e.target.value;render();}});
+  storeSelect.appendChild(h("option",{value:""},"Select store..."));
+  const myOg=h("optgroup",{label:"My stores"});
+  ["Al Yasmin Mall","Nakheel Mall","Panorama Mall","Al Aared Mall","Riyadh Park 2"].forEach(n=>{const o=h("option",{value:n},n);if(n===CS.store)o.selected=true;myOg.appendChild(o);});
+  const otherOg=h("optgroup",{label:"Other"});
+  ["Virtual — All Central","Virtual — All Regions","Riyadh Office",...stores.filter(s=>!["Al Yasmin Mall","Nakheel Mall","Panorama Mall","Al Aared Mall","Riyadh Park 2"].includes(s))].forEach(n=>{const o=h("option",{value:n},n);if(n===CS.store)o.selected=true;otherOg.appendChild(o);});
+  storeSelect.appendChild(myOg);storeSelect.appendChild(otherOg);
+  req.appendChild(storeSelect);
+
+  req.appendChild(div({style:{marginBottom:"10px"}}));
+  req.appendChild(div({class:"fl fl-req"},"Date"));
+  const dateInput=h("input",{type:"date",class:"input",value:CS.date,style:{borderColor:bo?.type==="hard"?C.red:!CS.date?C.redb:C.b1},onChange:e=>{CS.date=e.target.value;render();}});
+  req.appendChild(dateInput);
+  if(bo?.type==="hard")req.appendChild(div({style:{marginTop:"5px",fontSize:"10px",color:C.red,fontWeight:"600"}},`⛔ Blocked — ${bo.label}`));
+  if(bo?.type==="peak")req.appendChild(div({style:{marginTop:"5px",fontSize:"10px",color:C.amb,fontWeight:"600"}},`⚠ Peak period — ROM approval needed`));
+
+  req.appendChild(div({style:{marginBottom:"10px"}}));
+  req.appendChild(div({class:"fl fl-req"},"Capacity"));
+  const capInput=h("input",{type:"number",class:"input",value:CS.cap,placeholder:course?"Default: "+course.cap:"Select course first",onChange:e=>{CS.cap=e.target.value;render();}});
+  req.appendChild(capInput);
+  left.appendChild(req);
+
+  // Time card
+  const timeCard=card([],{});
+  timeCard.appendChild(div({style:{fontSize:"12px",fontWeight:"700",color:C.t2,marginBottom:"10px"}},"Time & duration"));
+  const timeGrid=div({style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px"}});
+  const timeInput=h("input",{type:"time",class:"input",value:CS.time,onChange:e=>{CS.time=e.target.value;}});
+  const durSelect=h("select",{class:"input",onChange:e=>{CS.dur=e.target.value;}});
+  ["1h","1.5h","2h","3h","4h","6h","8h","9h"].forEach(d=>{const o=h("option",{value:d},d);if(d===CS.dur)o.selected=true;durSelect.appendChild(o);});
+  timeGrid.appendChild(div({},div({class:"fl"},"Time"),timeInput));
+  timeGrid.appendChild(div({},div({class:"fl"},"Duration"),durSelect));
+  timeCard.appendChild(timeGrid);
+  left.appendChild(timeCard);
+  grid.appendChild(left);
+
+  // RIGHT COLUMN
+  const right=div({});
+
+  const autoCard=card([],{marginBottom:"12px"});
+  autoCard.appendChild(div({style:{display:"flex",alignItems:"center",gap:"6px",marginBottom:"12px"}},
+    div({style:{width:"20px",height:"20px",borderRadius:"50%",background:C.ew,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"9px",fontWeight:"800"}},"2"),
+    div({style:{fontSize:"12px",fontWeight:"700",color:C.ewd}},"Auto-filled — confirm or adjust")
+  ));
+
+  // Session type
+  autoCard.appendChild(div({class:"fl"},"Session type"));
+  const typeGrid=div({style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"7px",marginBottom:"11px"}});
+  [["instore","🏪","In-store"],["classroom","🏫","Classroom"],["virtual","💻","Virtual"]].forEach(([t,ic,l])=>{
+    const tb=h("button",{class:"btn",style:{padding:"8px 4px",border:`2px solid ${CS.sType===t?typeColor(t):C.b1}`,background:CS.sType===t?typeColor(t)+"14":"transparent",textAlign:"center",borderRadius:"8px"},onClick:()=>{CS.sType=t;render();}},ic+" ",div({style:{fontSize:"10px",fontWeight:"600",color:CS.sType===t?typeColor(t):C.t2}},l));
+    typeGrid.appendChild(tb);
+  });
+  autoCard.appendChild(typeGrid);
+
+  // Training type
+  autoCard.appendChild(div({class:"fl"},"Training type"));
+  const tTypeGrid=div({style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"7px",marginBottom:"11px"}});
+  ["Mandatory","Targeted","Optional"].forEach(t=>{
+    tTypeGrid.appendChild(h("button",{class:"btn",style:{padding:"7px 4px",border:`2px solid ${CS.tType===t?ttColor(t):C.b1}`,background:CS.tType===t?ttBg(t):"transparent",color:CS.tType===t?ttColor(t):C.t2,fontSize:"10px",fontWeight:"600",borderRadius:"8px"},onClick:()=>{CS.tType=t;render();}},t));
+  });
+  autoCard.appendChild(tTypeGrid);
+
+  // Roles
+  autoCard.appendChild(div({class:"fl"},"Audience"));
+  const rolesRow=div({style:{display:"flex",gap:"5px",flexWrap:"wrap",marginBottom:"11px"}});
+  allRoles.forEach(r=>{
+    const isActive=CS.roles.includes(r);
+    rolesRow.appendChild(h("button",{class:"btn",style:{padding:"3px 9px",borderRadius:"20px",fontSize:"10px",fontWeight:"600",border:`1px solid ${isActive?C.ewm:C.b2}`,background:isActive?C.ewl:"#EDEDEA",color:isActive?C.ewd:C.t2},onClick:()=>{CS.roles=isActive?CS.roles.filter(x=>x!==r):[...CS.roles,r];render();}},r));
+  });
+  autoCard.appendChild(rolesRow);
+
+  // Assessment
+  autoCard.appendChild(div({class:"fl"},"Assessment"));
+  const assRow=div({style:{display:"flex",gap:"7px",marginBottom:CS.assess?"8px":"0"}});
+  ["Yes","No"].forEach((l,i)=>{
+    const isYes=i===0;
+    const active=(CS.assess&&isYes)||(!CS.assess&&!isYes);
+    assRow.appendChild(h("button",{class:"btn",style:{flex:"1",padding:"7px",border:`2px solid ${active?C.ew:C.b1}`,background:active?C.ewl:"transparent",color:active?C.ewd:C.t2,fontSize:"11px",fontWeight:"600",borderRadius:"8px"},onClick:()=>{CS.assess=isYes;render();}},l));
+  });
+  autoCard.appendChild(assRow);
+  if(CS.assess){
+    autoCard.appendChild(div({class:"fl"},"Pass score (%)"));
+    autoCard.appendChild(h("input",{type:"number",class:"input",value:CS.pass,placeholder:"e.g. 75",onChange:e=>{CS.pass=e.target.value;}}));
+  }
+  right.appendChild(autoCard);
+
+  // Summary + save
+  const summaryCard=card([],{background:C.ewd});
+  summaryCard.appendChild(div({style:{fontSize:"12px",fontWeight:"800",color:"#fff",marginBottom:"10px"}},"Session summary"));
+  [course?["📚",course.name]:null,CS.store?["📍",CS.store]:null,CS.date?["📅",`${CS.date} · ${CS.time} · ${CS.dur}`]:null,CS.cap?["👥",`${CS.cap} capacity`]:null,CS.tType?["🏷",CS.tType]:null].filter(Boolean).forEach(([ic,txt])=>{
+    summaryCard.appendChild(div({style:{fontSize:"10px",color:"rgba(255,255,255,.85)",marginBottom:"3px"}},`${ic} ${txt}`));
+  });
+  const saveBtn=h("button",{class:"btn btn-primary",style:{width:"100%",padding:"10px",marginTop:"12px",fontSize:"12px",background:"#fff",color:C.ewd,opacity:canSave?"1":"0.5",cursor:canSave?"pointer":"not-allowed"},onClick:()=>{
+    if(!canSave)return;
+    const prog=PROGRAMS.find(p=>p.id===course.pid);
+    STATE.sessions.unshift({id:"ES"+Date.now(),cid:CS.cid,course:course.name,pid:course.pid,program:prog?.name||"",type:CS.sType,date:CS.date,time:CS.time,dur:CS.dur,store:CS.store,cap:parseInt(CS.cap)||20,reg:0,waitlist:0,trainingType:CS.tType||course.type,roles:CS.roles,assess:CS.assess,passScore:CS.assess?parseInt(CS.pass):null,status:"planned",sync:"not_synced"});
+    CS.done=true;render();
+  }},"Create session →");
+  summaryCard.appendChild(saveBtn);
+  if(bo?.type==="hard")summaryCard.appendChild(div({style:{fontSize:"10px",color:"#FECACA",textAlign:"center",marginTop:"6px"}},"Date is blocked — choose another date"));
+  right.appendChild(summaryCard);
+
+  grid.appendChild(right);
+  wrap.appendChild(grid);
+
+  // LL Preview
+  if(CS.store&&CS.date&&course){
+    const llCard=card([],{marginTop:"12px",border:`1px solid ${C.ewm}`,background:C.ewl});
+    llCard.appendChild(div({style:{display:"flex",alignItems:"center",gap:"8px",marginBottom:"10px"}},
+      div({style:{background:C.ewd,color:"#fff",borderRadius:"7px",padding:"3px 9px",fontSize:"10px",fontWeight:"700"}},"LearnLab"),
+      div({style:{fontSize:"12px",fontWeight:"700",color:C.ewd}},"Auto-announcement preview")
+    ));
+    llCard.appendChild(div({style:{fontSize:"11px",color:C.ewd,lineHeight:"1.7",background:"rgba(255,255,255,.6)",borderRadius:"8px",padding:"10px 12px"}},
+      `📢 Trainer Visit Announcement\n\nYour trainer Mohammad Othman is visiting ${CS.store} on ${CS.date} at ${CS.time} to cover "${course.name}". Please be ready and ensure full team attendance.`
+    ));
+    wrap.appendChild(llCard);
+  }
+  return wrap;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ADD COURSE
+// ═══════════════════════════════════════════════════════════════════
+const AC={title:"",code:"",desc:"",program:"P02",topic:"",trainingType:"Mandatory",roles:[],cap:20,days:30,format:"classroom",assess:false,passScore:75,kpis:[],trainerNotes:"",done:false,step:1};
+function renderAddCourse(){
+  if(AC.done){
+    return card(div({style:{textAlign:"center",padding:"36px 20px"}},
+      div({style:{fontSize:"44px",marginBottom:"12px"}},"✅"),
+      div({style:{fontSize:"16px",fontWeight:"700",color:C.ewd,marginBottom:"5px"}},"Course created"),
+      div({style:{fontSize:"11px",color:C.t2,marginBottom:"22px"}},`"${AC.title}" has been added to ${PROGRAMS.find(p=>p.id===AC.program)?.name}`),
+      btn("Add another course","btn-primary btn",()=>{Object.assign(AC,{title:"",code:"",desc:"",program:"P02",topic:"",trainingType:"Mandatory",roles:[],cap:20,days:30,format:"classroom",assess:false,passScore:75,kpis:[],trainerNotes:"",done:false,step:1});render();})," ",
+      btn("Back to Academy","btn-secondary btn",()=>{STATE.showAddCourse=false;STATE.tab="academy";Object.assign(AC,{title:"",code:"",desc:"",program:"P02",topic:"",trainingType:"Mandatory",roles:[],cap:20,days:30,format:"classroom",assess:false,passScore:75,kpis:[],trainerNotes:"",done:false,step:1});render();})," ",
+      btn("Create a session →","btn-secondary btn",()=>{STATE.showAddCourse=false;STATE.showCreateSession=true;resetCS();render();})
+    ));
+  }
+
+  const allRoles=["SA","Junior SA","Senior SA","Optician","Optometrist","SIC","SM","Optometrist"];
+  const kpiOptions=["Conversion Rate","AOV","UPT","Insurance Attachment Rate","Lens Upgrade Rate","NPS / Mystery Shopper","Eye Test Conversion","Speed to Productivity"];
+  const canSave=AC.title&&AC.program;
+
+  const wrap=div({});
+  const hdr=div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"16px"}});
+  hdr.appendChild(div({},
+    div({style:{fontSize:"15px",fontWeight:"800"}},"Add new course"),
+    div({style:{fontSize:"10px",color:C.t3,marginTop:"1px"}},"Admin only · fills into Academy immediately")
+  ));
+  hdr.appendChild(btn("Cancel","btn-ghost",()=>{STATE.showAddCourse=false;render();}));
+  wrap.appendChild(hdr);
+
+  const grid=div({style:{display:"grid",gridTemplateColumns:"1fr 380px",gap:"16px"}});
+  const left=div({});
+
+  // Section 1: Basic info
+  const sec1=card([],{marginBottom:"12px"});
+  sec1.appendChild(div({style:{display:"flex",alignItems:"center",gap:"6px",marginBottom:"12px"}},
+    div({style:{width:"20px",height:"20px",borderRadius:"50%",background:C.ewd,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"9px",fontWeight:"800"}},"1"),
+    div({style:{fontSize:"12px",fontWeight:"700",color:C.ewd}},"Course identity")
+  ));
+  sec1.appendChild(div({class:"fl fl-req",style:{marginBottom:"5px"}},"Course title"));
+  sec1.appendChild(h("input",{type:"text",class:"input",value:AC.title,placeholder:"e.g. Advanced Frame Styling",style:{marginBottom:"10px"},onInput:e=>{AC.title=e.target.value;render();}}));
+  const codeRow=div({style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginBottom:"10px"}});
+  const codeInput=h("input",{type:"text",class:"input",value:AC.code,placeholder:"e.g. C30",onInput:e=>{AC.code=e.target.value;}});
+  const topicInput=h("input",{type:"text",class:"input",value:AC.topic,placeholder:"e.g. RETAIL AND SALES",onInput:e=>{AC.topic=e.target.value;}});
+  codeRow.appendChild(div({},div({class:"fl"},"Course code"),codeInput));
+  codeRow.appendChild(div({},div({class:"fl"},"Topic"),topicInput));
+  sec1.appendChild(codeRow);
+  sec1.appendChild(div({class:"fl"},"Description"));
+  sec1.appendChild(h("textarea",{class:"input",placeholder:"What does this course cover? What problem does it solve?",rows:"3",style:{resize:"vertical"},onInput:e=>{AC.desc=e.target.value;}},AC.desc));
+  left.appendChild(sec1);
+
+  // Section 2: Program + type
+  const sec2=card([],{marginBottom:"12px"});
+  sec2.appendChild(div({style:{display:"flex",alignItems:"center",gap:"6px",marginBottom:"12px"}},
+    div({style:{width:"20px",height:"20px",borderRadius:"50%",background:C.ew,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"9px",fontWeight:"800"}},"2"),
+    div({style:{fontSize:"12px",fontWeight:"700",color:C.ewd}},"Program & classification")
+  ));
+  sec2.appendChild(div({class:"fl fl-req"},"Program"));
+  const progSelect=h("select",{class:"input",style:{marginBottom:"10px"},onChange:e=>{AC.program=e.target.value;render();}});
+  PROGRAMS.forEach(p=>{const o=h("option",{value:p.id},p.name);if(p.id===AC.program)o.selected=true;progSelect.appendChild(o);});
+  sec2.appendChild(progSelect);
+  sec2.appendChild(div({class:"fl"},"Training type"));
+  const tTypeGrid=div({style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"7px",marginBottom:"10px"}});
+  ["Mandatory","Targeted","Optional"].forEach(t=>{
+    tTypeGrid.appendChild(h("button",{class:"btn",style:{padding:"7px 4px",border:`2px solid ${AC.trainingType===t?ttColor(t):C.b1}`,background:AC.trainingType===t?ttBg(t):"transparent",color:AC.trainingType===t?ttColor(t):C.t2,fontSize:"10px",fontWeight:"600",borderRadius:"8px"},onClick:()=>{AC.trainingType=t;render();}},t));
+  });
+  sec2.appendChild(tTypeGrid);
+  sec2.appendChild(div({class:"fl"},"Target roles"));
+  const rolesRow=div({style:{display:"flex",gap:"5px",flexWrap:"wrap",marginBottom:"10px"}});
+  allRoles.forEach(r=>{
+    const isActive=AC.roles.includes(r);
+    rolesRow.appendChild(h("button",{class:"btn",style:{padding:"3px 9px",borderRadius:"20px",fontSize:"10px",fontWeight:"600",border:`1px solid ${isActive?C.ewm:C.b2}`,background:isActive?C.ewl:"#EDEDEA",color:isActive?C.ewd:C.t2},onClick:()=>{AC.roles=isActive?AC.roles.filter(x=>x!==r):[...AC.roles,r];render();}},r));
+  });
+  sec2.appendChild(rolesRow);
+  left.appendChild(sec2);
+
+  // Section 3: Delivery settings
+  const sec3=card([],{marginBottom:"12px"});
+  sec3.appendChild(div({style:{display:"flex",alignItems:"center",gap:"6px",marginBottom:"12px"}},
+    div({style:{width:"20px",height:"20px",borderRadius:"50%",background:"#C07818",color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"9px",fontWeight:"800"}},"3"),
+    div({style:{fontSize:"12px",fontWeight:"700",color:"#C07818"}},"Delivery settings")
+  ));
+  const delGrid=div({style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginBottom:"10px"}});
+  const capInp=h("input",{type:"number",class:"input",value:String(AC.cap),onInput:e=>{AC.cap=parseInt(e.target.value)||20;}});
+  const daysInp=h("input",{type:"number",class:"input",value:String(AC.days),placeholder:"e.g. 30 (D30 target)",onInput:e=>{AC.days=parseInt(e.target.value)||0;}});
+  delGrid.appendChild(div({},div({class:"fl"},"Capacity"),capInp));
+  delGrid.appendChild(div({},div({class:"fl"},"Completion target (days)"),daysInp));
+  sec3.appendChild(delGrid);
+  sec3.appendChild(div({class:"fl"},"Delivery format"));
+  const fmtGrid=div({style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"7px",marginBottom:"10px"}});
+  [["classroom","🏫","Classroom"],["instore","🏪","In-store"],["virtual","💻","Virtual"],["blended","🔄","Blended"],["self_learning","📱","Self-learning"],["coaching","🗣","Coaching"]].forEach(([t,ic,l])=>{
+    fmtGrid.appendChild(h("button",{class:"btn",style:{padding:"7px 4px",border:`2px solid ${AC.format===t?typeColor(t):C.b1}`,background:AC.format===t?typeColor(t)+"14":"transparent",fontSize:"10px",fontWeight:"600",borderRadius:"8px",textAlign:"center",color:AC.format===t?typeColor(t):C.t2},onClick:()=>{AC.format=t;render();}},`${ic} ${l}`));
+  });
+  sec3.appendChild(fmtGrid);
+  sec3.appendChild(div({class:"fl"},"Assessment required?"));
+  const assGrid=div({style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"7px",marginBottom:AC.assess?"10px":"0"}});
+  [["Yes",true],["No",false]].forEach(([l,v])=>{
+    assGrid.appendChild(h("button",{class:"btn",style:{padding:"7px",border:`2px solid ${AC.assess===v?C.ew:C.b1}`,background:AC.assess===v?C.ewl:"transparent",color:AC.assess===v?C.ewd:C.t2,fontWeight:"600",fontSize:"11px",borderRadius:"8px"},onClick:()=>{AC.assess=v;render();}},l));
+  });
+  sec3.appendChild(assGrid);
+  if(AC.assess){
+    sec3.appendChild(div({class:"fl",style:{marginTop:"10px"}},"Pass score (%)"));
+    sec3.appendChild(h("input",{type:"number",class:"input",value:String(AC.passScore),onInput:e=>{AC.passScore=parseInt(e.target.value)||75;}}));
+  }
+  left.appendChild(sec3);
+
+  // Section 4: KPI + Notes
+  const sec4=card([],{});
+  sec4.appendChild(div({style:{display:"flex",alignItems:"center",gap:"6px",marginBottom:"12px"}},
+    div({style:{width:"20px",height:"20px",borderRadius:"50%",background:C.blue,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"9px",fontWeight:"800"}},"4"),
+    div({style:{fontSize:"12px",fontWeight:"700",color:C.blue}},"Impact & context")
+  ));
+  sec4.appendChild(div({class:"fl"},"Linked KPIs"));
+  const kpiRow=div({style:{display:"flex",gap:"5px",flexWrap:"wrap",marginBottom:"10px"}});
+  kpiOptions.forEach(k=>{
+    const isActive=AC.kpis.includes(k);
+    kpiRow.appendChild(h("button",{class:"btn",style:{padding:"3px 9px",borderRadius:"20px",fontSize:"10px",fontWeight:"600",border:`1px solid ${isActive?C.blueb:C.b2}`,background:isActive?C.bluel:"#EDEDEA",color:isActive?C.blue:C.t2},onClick:()=>{AC.kpis=isActive?AC.kpis.filter(x=>x!==k):[...AC.kpis,k];render();}},k));
+  });
+  sec4.appendChild(kpiRow);
+  sec4.appendChild(div({class:"fl"},"Trainer notes"));
+  sec4.appendChild(h("textarea",{class:"input",placeholder:"Tips for the trainer delivering this course — key concepts, activities, common mistakes...",rows:"3",style:{resize:"vertical"},onInput:e=>{AC.trainerNotes=e.target.value;}},AC.trainerNotes));
+  left.appendChild(sec4);
+
+  grid.appendChild(left);
+
+  // RIGHT — LearnLab preview + save
+  const rightCol=div({});
+  const llPrev=card([],{border:`1px solid ${C.ewm}`,background:C.ewl,marginBottom:"12px"});
+  llPrev.appendChild(div({style:{display:"flex",alignItems:"center",gap:"8px",marginBottom:"10px"}},
+    div({style:{background:C.ewd,color:"#fff",borderRadius:"7px",padding:"3px 9px",fontSize:"10px",fontWeight:"700"}},"LearnLab"),
+    div({style:{fontSize:"12px",fontWeight:"700",color:C.ewd}},"Preview")
+  ));
+  const prog=PROGRAMS.find(p=>p.id===AC.program);
+  llPrev.appendChild(div({style:{background:"rgba(255,255,255,.7)",borderRadius:"8px",padding:"10px 12px"}},
+    div({style:{fontSize:"11px",fontWeight:"800",color:C.ewd,marginBottom:"4px"}},"📚 New course: "+(AC.title||"Course title")),
+    div({style:{fontSize:"10px",color:C.ewd,opacity:".9",marginBottom:"4px"}},`Program: ${prog?.name||"—"} · Type: ${AC.trainingType}`),
+    AC.roles.length?div({style:{fontSize:"10px",color:C.ewd}},`For: ${AC.roles.join(", ")}`):null,
+    AC.kpis.length?div({style:{fontSize:"10px",color:C.ewd,marginTop:"3px"}},`KPI impact: ${AC.kpis.join(", ")}`):null
+  ));
+  rightCol.appendChild(llPrev);
+
+  // Save card
+  const saveCard=card([],{background:canSave?C.ewd:"#888",borderColor:"transparent"});
+  saveCard.appendChild(div({style:{fontSize:"12px",fontWeight:"700",color:"#fff",marginBottom:"8px"}},"Course summary"));
+  [AC.title?["📚",AC.title]:null,prog?["📂",prog.name]:null,AC.trainingType?["🏷",AC.trainingType]:null,AC.roles.length?["👥",AC.roles.join(", ")]:null,AC.cap?["👥",`${AC.cap} capacity`]:null,AC.assess?["✅",`Assessment · Pass ${AC.passScore}%`]:null].filter(Boolean).forEach(([ic,txt])=>{
+    saveCard.appendChild(div({style:{fontSize:"10px",color:"rgba(255,255,255,.85)",marginBottom:"3px"}},`${ic} ${txt}`));
+  });
+  const saveBtn2=h("button",{class:"btn",style:{width:"100%",padding:"10px",marginTop:"12px",fontSize:"12px",background:"#fff",color:canSave?C.ewd:C.t3,cursor:canSave?"pointer":"not-allowed",fontWeight:"700",borderRadius:"8px",border:"none"},onClick:()=>{
+    if(!canSave)return;
+    const newId="C"+(STATE.courses.length+30);
+    STATE.courses.push({id:newId,pid:AC.program,name:AC.title,topic:AC.topic||"GENERAL",sub:AC.title,type:AC.trainingType,roles:AC.roles,cap:AC.cap,assess:AC.assess,passScore:AC.assess?AC.passScore:null,days:AC.days||null,format:AC.format,kpis:AC.kpis,trainerNotes:AC.trainerNotes,desc:AC.desc,code:AC.code});
+    AC.done=true;render();
+  }},"Save course →");
+  saveCard.appendChild(saveBtn2);
+  if(!canSave)saveCard.appendChild(div({style:{fontSize:"10px",color:"rgba(255,255,255,.7)",textAlign:"center",marginTop:"6px"}},"Title and program are required"));
+  rightCol.appendChild(saveCard);
+  grid.appendChild(rightCol);
+  wrap.appendChild(grid);
+  return wrap;
+}
+</script>
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// CONTENT ADMIN (matching screenshot)
+// ═══════════════════════════════════════════════════════════════════
+function renderContentAdmin(){
+  const sub=STATE.contentSubTab;
+  const wrap=div({style:{display:"flex",height:"100%",gap:"0"}});
+
+  // LEFT NAV
+  const nav=div({class:"content-nav"});
+  // CONTENT section
+  nav.appendChild(div({class:"content-nav-section"},"CONTENT"));
+  [
+    {id:"launcher",l:"Content launcher",badge:null},
+    {id:"review",l:"Review queue",badge:"5",badgeColor:C.red},
+    {id:"baseer",l:"Baseer workspace",badge:null},
+    {id:"gaps",l:"Content gaps",badge:"4",badgeColor:C.amb},
+  ].forEach(({id,l,badge,badgeColor})=>{
+    const item=div({class:`content-nav-item${sub===id?" active":""}`,onClick:()=>{STATE.contentSubTab=id;render();}},l);
+    if(badge){const b=span({class:"content-nav-badge",style:{background:badgeColor+"20",color:badgeColor}},badge);item.appendChild(b);}
+    nav.appendChild(item);
+  });
+
+  // TRAINING OPS
+  nav.appendChild(div({class:"content-nav-section"},"TRAINING OPS"));
+  [
+    {id:"planning",l:"Planning calendar",badge:null},
+    {id:"sessions_mgr",l:"Sessions manager",badge:null},
+    {id:"store_requests",l:"Store requests",badge:"3",badgeColor:C.amb},
+    {id:"certs",l:"Certifications",badge:null},
+  ].forEach(({id,l,badge,badgeColor})=>{
+    const item=div({class:`content-nav-item${sub===id?" active":""}`,onClick:()=>{STATE.contentSubTab=id;render();}},l);
+    if(badge){const b=span({class:"content-nav-badge",style:{background:badgeColor+"20",color:badgeColor}},badge);item.appendChild(b);}
+    nav.appendChild(item);
+  });
+
+  // CREATE
+  nav.appendChild(div({class:"content-nav-section"},"CREATE"));
+  [
+    {id:"add_course_nav",l:"+ Add Course",badge:null},
+    {id:"add_session_nav",l:"+ Add Session",badge:null},
+  ].forEach(({id,l})=>{
+    const item=div({class:`content-nav-item`,style:{color:C.ewd,fontWeight:"700"},onClick:()=>{
+      if(id==="add_course_nav"){STATE.showAddCourse=true;STATE.showCreateSession=false;}
+      if(id==="add_session_nav"){STATE.showCreateSession=true;STATE.showAddCourse=false;resetCS();}
+      render();
+    }},l);
+    nav.appendChild(item);
+  });
+
+  // REPORTS
+  nav.appendChild(div({class:"content-nav-section"},"REPORTS"));
+  nav.appendChild(div({class:`content-nav-item${sub==="trainer_activity"?" active":""}`,onClick:()=>{STATE.contentSubTab="trainer_activity";render();}},"Trainer activity"));
+
+  wrap.appendChild(nav);
+
+  // MAIN CONTENT AREA
+  const main=div({style:{flex:"1",overflowY:"auto",padding:"20px"}});
+
+  if(sub==="launcher") main.appendChild(renderBaseerLauncher());
+  else if(sub==="review") main.appendChild(renderReviewQueue());
+  else if(sub==="baseer") main.appendChild(renderBaseerWorkspace());
+  else if(sub==="gaps") main.appendChild(renderContentGaps());
+  else if(sub==="planning") main.appendChild(renderPlanningCalendar());
+  else if(sub==="sessions_mgr") main.appendChild(renderSessions());
+  else if(sub==="store_requests") main.appendChild(renderStoreRequests());
+  else if(sub==="certs") main.appendChild(renderCertifications());
+  else if(sub==="trainer_activity") main.appendChild(renderTrainerActivity());
+  else main.appendChild(div({style:{color:C.t3,padding:"24px"}},"Select a section from the left nav"));
+
+  wrap.appendChild(main);
+  return wrap;
+}
+
+function renderBaseerLauncher(){
+  const wrap=div({});
+  const assets=["Course summary (EN + AR)","LearnLab knowledge entry (EN + AR)","Key selling points — 5 bullets","10-question quiz","5 golden sentences (EN + AR)","2 role-play scenarios","Trainer guide (60-min + 20-min floor)","1-page handout (EN + AR, print-ready)","WhatsApp launch message (EN + AR)"];
+  const kpiOptions=["AOV","UPT","EG Conversion","Conversion Rate","Insurance Attachment Rate","Lens Upgrade Rate"];
+
+  // Upload zone
+  const uploadZone=div({style:{border:"2px dashed #CECEC8",borderRadius:"12px",padding:"32px",textAlign:"center",marginBottom:"20px",cursor:"pointer",background:STATE.baseerGenerated?"#e8f5ef":"#fff",borderColor:STATE.baseerGenerated?C.ewm:"#CECEC8"},onClick:()=>{if(!STATE.baseerGenerated)alert("File upload simulation — in production this opens a file picker");}});
+  if(STATE.baseerGenerated){
+    uploadZone.appendChild(div({style:{fontSize:"24px",marginBottom:"8px"}},"✅"));
+    uploadZone.appendChild(div({style:{fontSize:"16px",fontWeight:"700",color:C.ewd,marginBottom:"4px"}},"File uploaded — Baseer is working"));
+    uploadZone.appendChild(div({style:{fontSize:"12px",color:C.t3}},"NYLO_SS26_Collection_Brief.pdf · 4.2 MB"));
+  } else {
+    uploadZone.appendChild(div({style:{fontSize:"16px",fontWeight:"700",color:C.t1,marginBottom:"6px"}},"Drop file or click to upload"));
+    uploadZone.appendChild(div({style:{fontSize:"12px",color:C.t3,marginBottom:"4px"}},"PDF · PPT · Word · Video · Brand guide · SOP · Any format"));
+    uploadZone.appendChild(div({style:{fontSize:"11px",color:C.t3}},"Baseer reads it and generates 9 training assets in 90 seconds"));
+  }
+  wrap.appendChild(uploadZone);
+
+  const cols=div({style:{display:"grid",gridTemplateColumns:"1fr 360px",gap:"20px"}});
+
+  // Settings
+  const settCard=div({class:"card"});
+  settCard.appendChild(div({style:{fontSize:"16px",fontWeight:"700",color:C.t1,marginBottom:"16px"}},"Content settings"));
+
+  settCard.appendChild(div({class:"fl"},"CONTENT TYPE"));
+  const ctSelect=h("select",{class:"input",style:{marginBottom:"16px"}});
+  ["New collection launch","Brand training","Product knowledge","Selling skills","Compliance","Onboarding"].forEach(o=>{const opt=h("option",{value:o},o);if(o==="New collection launch")opt.selected=true;ctSelect.appendChild(opt);});
+  settCard.appendChild(ctSelect);
+
+  settCard.appendChild(div({class:"fl"},"ASSIGN TO ROLES"));
+  const rolesPills=div({style:{display:"flex",gap:"6px",flexWrap:"wrap",marginBottom:"16px"}});
+  const activeRoles=["SA","Senior SA","SIC","SM","Optometrist"];
+  ["SA","Junior SA","Senior SA","SIC","SM","Optometrist","Optician"].forEach(r=>{
+    const active=activeRoles.includes(r);
+    rolesPills.appendChild(span({style:{padding:"3px 10px",borderRadius:"20px",fontSize:"11px",fontWeight:"600",background:active?C.ewd:"#EEE",color:active?"#fff":C.t3,cursor:"pointer"}},r));
+  });
+  settCard.appendChild(rolesPills);
+
+  settCard.appendChild(div({class:"fl"},"CX PHASE"));
+  const cxSelect=h("select",{class:"input",style:{marginBottom:"16px"}});
+  ["Phase 1 — Welcome & Greet","Phase 2 — Discover & Style","Phase 3 — Recommend & Close","Phase 4 — Collection Ceremony","All phases"].forEach(o=>{const opt=h("option",{value:o},o);if(o==="Phase 2 — Discover & Style")opt.selected=true;cxSelect.appendChild(opt);});
+  settCard.appendChild(cxSelect);
+
+  settCard.appendChild(div({class:"fl"},"LINKED KPIS"));
+  const kpiRow=div({style:{display:"flex",gap:"6px",flexWrap:"wrap",marginBottom:"16px"}});
+  const activeKpis=["AOV","UPT","EG Conversion"];
+  kpiOptions.forEach(k=>{
+    const active=activeKpis.includes(k);
+    kpiRow.appendChild(span({style:{padding:"3px 10px",borderRadius:"20px",fontSize:"11px",fontWeight:"600",background:active?C.ambl:"#EEE",color:active?C.amb:C.t3,cursor:"pointer"}},k));
+  });
+  settCard.appendChild(kpiRow);
+
+  settCard.appendChild(div({class:"fl"},"LANGUAGE"));
+  const langSelect=h("select",{class:"input"});
+  ["English + Arabic (auto-translate)","English only","Arabic only"].forEach(o=>{const opt=h("option",{value:o},o);if(o==="English + Arabic (auto-translate)")opt.selected=true;langSelect.appendChild(opt);});
+  settCard.appendChild(langSelect);
+  cols.appendChild(settCard);
+
+  // Assets panel
+  const assetsCard=div({class:"card",style:{border:`1px solid ${STATE.baseerGenerated?C.ewm:C.b1}`}});
+  const assetsHdr=div({style:{marginBottom:"4px"}});
+  assetsHdr.appendChild(div({style:{fontSize:"16px",fontWeight:"700",color:C.t1}},"Baseer generates — 9 assets"));
+  assetsHdr.appendChild(div({style:{fontSize:"11px",color:C.t3,marginBottom:"14px"}},"All go to review queue before publishing"));
+  assetsCard.appendChild(assetsHdr);
+  assets.forEach((a,i)=>{
+    const row=div({style:{display:"flex",alignItems:"center",gap:"10px",padding:"8px 0",borderBottom:i<assets.length-1?`1px solid ${C.b1}`:"none"}});
+    const checkbox=div({style:{width:"18px",height:"18px",borderRadius:"4px",border:`2px solid ${STATE.baseerGenerated?C.ew:C.b2}`,flexShrink:"0",display:"flex",alignItems:"center",justifyContent:"center",background:STATE.baseerGenerated?C.ewl:"#fff"}},STATE.baseerGenerated?span({style:{color:C.ew,fontSize:"11px",fontWeight:"700"}},"✓"):null);
+    row.appendChild(checkbox);
+    row.appendChild(span({style:{fontSize:"11px",color:STATE.baseerGenerated?C.ewd:C.t1,fontWeight:STATE.baseerGenerated?"600":"400"}},a));
+    if(STATE.baseerGenerated)row.appendChild(span({class:"tag tag-green",style:{marginLeft:"auto",fontSize:"9px"}},"Ready"));
+    assetsCard.appendChild(row);
+  });
+
+  // Generate button
+  const genBtn=h("button",{style:{width:"100%",padding:"14px",background:C.ewd,border:"none",borderRadius:"10px",color:"#fff",fontSize:"14px",fontWeight:"700",cursor:"pointer",marginTop:"14px",display:"flex",alignItems:"center",justifyContent:"center",gap:"8px"},onClick:()=>{
+    if(STATE.baseerLoading||STATE.baseerGenerated)return;
+    STATE.baseerLoading=true;render();
+    setTimeout(()=>{STATE.baseerLoading=false;STATE.baseerGenerated=true;STATE.contentSubTab="review";render();},2000);
+  }});
+  if(STATE.baseerLoading){
+    genBtn.appendChild(div({style:{width:"16px",height:"16px",border:"2px solid rgba(255,255,255,.4)",borderTopColor:"#fff",borderRadius:"50%",animation:"spin 1s linear infinite"}}));
+    genBtn.appendChild(span({},"Baseer is working..."));
+    const style=h("style",{},"@keyframes spin{to{transform:rotate(360deg)}}");
+    document.head.appendChild(style);
+  } else if(STATE.baseerGenerated){
+    genBtn.textContent="✅ Assets generated — in review queue";
+    genBtn.style.background=C.ew;
+  } else {
+    genBtn.textContent="Generate & launch pipeline →";
+  }
+  assetsCard.appendChild(genBtn);
+  cols.appendChild(assetsCard);
+  wrap.appendChild(cols);
+  return wrap;
+}
+
+function renderReviewQueue(){
+  const wrap=div({});
+  wrap.appendChild(div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"16px"}},
+    div({},div({style:{fontSize:"15px",fontWeight:"800"}},"Review queue"),div({style:{fontSize:"10px",color:C.t3,marginTop:"1px"}},"AI-generated assets awaiting your review and approval")),
+    span({class:"tag tag-red",style:{fontSize:"11px"}},`${STATE.reviewQueueItems.filter(i=>i.status==="pending").length} pending`)
+  ));
+  STATE.reviewQueueItems.forEach(item=>{
+    const row=div({class:"card",style:{marginBottom:"8px",borderLeft:`4px solid ${item.status==="approved"?C.ew:item.status==="rejected"?C.red:C.amb}`}});
+    const inner=div({style:{display:"flex",alignItems:"center",gap:"12px"}});
+    inner.appendChild(div({style:{width:"36px",height:"36px",borderRadius:"8px",background:C.ewd,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"16px",flexShrink:"0"}},"🤖"));
+    inner.appendChild(div({style:{flex:"1"}},
+      div({style:{fontSize:"12px",fontWeight:"700",color:C.t1,marginBottom:"2px"}},item.title),
+      div({style:{fontSize:"10px",color:C.t3}},`${item.type} · Generated by ${item.ai}`)
+    ));
+    const status=item.status;
+    if(status==="pending"){
+      const acts=div({style:{display:"flex",gap:"6px"}});
+      acts.appendChild(btn("✓ Approve","btn-sm btn-primary",()=>{item.status="approved";render();}));
+      acts.appendChild(btn("✗ Reject","btn-sm btn-danger",()=>{item.status="rejected";render();}));
+      acts.appendChild(btn("Edit","btn-sm btn-ghost",()=>{alert("Opens editor for: "+item.title);}));
+      inner.appendChild(acts);
+    } else {
+      inner.appendChild(span({class:`tag tag-${status==="approved"?"green":"red"}`},status==="approved"?"✓ Approved":"✗ Rejected"));
+    }
+    row.appendChild(inner);
+    wrap.appendChild(row);
+  });
+  return wrap;
+}
+
+function renderBaseerWorkspace(){
+  return card(div({style:{textAlign:"center",padding:"40px 20px"}},
+    div({style:{fontSize:"44px",marginBottom:"12px"}},"🤖"),
+    div({style:{fontSize:"16px",fontWeight:"700",color:C.t1,marginBottom:"8px"}},"Baseer AI Workspace"),
+    div({style:{fontSize:"12px",color:C.t3,marginBottom:"20px",maxWidth:"400px",margin:"0 auto 20px"}},"Baseer reads your source material and generates 9 training-ready assets. Upload a file from Content launcher to start."),
+    btn("→ Go to Content launcher","btn-primary",()=>{STATE.contentSubTab="launcher";render();})
+  ));
+}
+
+function renderContentGaps(){
+  const gaps=[
+    {topic:"Progressive lens objection handling",reason:"Conversion gap in 4 stores, no existing course",priority:"high"},
+    {topic:"Rimless frame care instructions",reason:"3 customer complaints last month",priority:"medium"},
+    {topic:"Contact lens upgrade scripts",reason:"PRISM assessment gap in UAE region",priority:"high"},
+    {topic:"Insurance renewal conversation",reason:"Coverage data shows 60% gap in KSA",priority:"medium"},
+  ];
+  const wrap=div({});
+  wrap.appendChild(div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"16px"}},
+    div({},div({style:{fontSize:"15px",fontWeight:"800"}},"Content gaps"),div({style:{fontSize:"10px",color:C.t3}},"Topics not covered by existing courses · ranked by impact")),
+    btn("+ Suggest gap","btn-secondary",()=>{alert("Opens gap suggestion form");})
+  ));
+  gaps.forEach(g=>{
+    const gCard=div({class:"card",style:{marginBottom:"8px",borderLeft:`4px solid ${g.priority==="high"?C.red:C.amb}`}});
+    const row=div({style:{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:"12px"}});
+    row.appendChild(div({style:{flex:"1"}},
+      div({style:{fontSize:"12px",fontWeight:"700",marginBottom:"3px"}},g.topic),
+      div({style:{fontSize:"10px",color:C.t3}},g.reason)
+    ));
+    const acts=div({style:{display:"flex",gap:"6px",flexShrink:"0"}});
+    acts.appendChild(span({class:`tag tag-${g.priority==="high"?"red":"amber"}`},g.priority));
+    acts.appendChild(btn("→ Create course","btn-sm btn-secondary",()=>{STATE.showAddCourse=true;STATE.showCreateSession=false;render();}));
+    row.appendChild(acts);
+    gCard.appendChild(row);
+    wrap.appendChild(gCard);
+  });
+  return wrap;
+}
+
+function renderPlanningCalendar(){
+  const wrap=div({});
+  wrap.appendChild(sh("Planning calendar","April 2026 · Central Region",btn("+ Schedule","btn-primary btn",()=>{STATE.showCreateSession=true;render();})));
+  const weeks=[
+    {week:"Apr 7–11",sessions:STATE.sessions.filter(s=>s.date>="2026-04-07"&&s.date<="2026-04-11")},
+    {week:"Apr 14–18",sessions:STATE.sessions.filter(s=>s.date>="2026-04-14"&&s.date<="2026-04-18")},
+    {week:"Apr 21–25",sessions:STATE.sessions.filter(s=>s.date>="2026-04-21"&&s.date<="2026-04-25")},
+    {week:"Apr 28–30",sessions:STATE.sessions.filter(s=>s.date>="2026-04-28"&&s.date<="2026-04-30")},
+  ];
+  weeks.forEach(w=>{
+    const wCard=div({class:"card",style:{marginBottom:"10px"}});
+    wCard.appendChild(div({style:{fontSize:"12px",fontWeight:"700",color:C.t2,marginBottom:"8px"}},w.week));
+    if(!w.sessions.length)wCard.appendChild(div({style:{fontSize:"11px",color:C.t3,padding:"8px 0"}},"No sessions scheduled"));
+    w.sessions.forEach(s=>{
+      const row=div({style:{display:"flex",alignItems:"center",gap:"8px",padding:"6px 0",borderBottom:`1px solid ${C.b1}`}});
+      row.appendChild(span({style:{fontSize:"16px"}},typeIcon(s.type)));
+      row.appendChild(div({style:{flex:"1"}},
+        div({style:{fontSize:"11px",fontWeight:"600"}},s.course),
+        div({style:{fontSize:"10px",color:C.t3}},`${s.date} · ${s.time} · ${s.store} · ${s.reg}/${s.cap}`)
+      ));
+      row.appendChild(span({class:`tag tag-${s.status==="completed"?"green":s.status==="open"?"blue":"gray"}`},s.status));
+      wCard.appendChild(row);
+    });
+    wrap.appendChild(wCard);
+  });
+  return wrap;
+}
+
+function renderStoreRequests(){
+  const wrap=div({});
+  wrap.appendChild(div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"14px"}},
+    div({},div({style:{fontSize:"15px",fontWeight:"800"}},"Store requests"),div({style:{fontSize:"10px",color:C.t3}},"Training support requests from store managers")),
+    span({class:"tag tag-amber"},`${STATE.storeRequests.filter(r=>r.status==="pending").length} pending`)
+  ));
+  STATE.storeRequests.forEach(r=>{
+    const row=div({class:"card",style:{marginBottom:"8px",borderLeft:`4px solid ${r.status==="pending"?C.amb:r.status==="scheduled"?C.ew:C.blue}`}});
+    const inner=div({style:{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:"12px"}});
+    inner.appendChild(div({style:{flex:"1"}},
+      div({style:{fontSize:"12px",fontWeight:"700",marginBottom:"3px"}},r.store),
+      div({style:{fontSize:"11px",color:C.t2,marginBottom:"3px"}},r.request),
+      div({style:{fontSize:"10px",color:C.t3}},`Submitted: ${r.date}`)
+    ));
+    const acts=div({style:{display:"flex",gap:"6px",flexShrink:"0",alignItems:"flex-start"}});
+    acts.appendChild(span({class:`tag tag-${r.status==="pending"?"amber":r.status==="scheduled"?"green":"blue"}`},r.status.replace("_"," ")));
+    if(r.status==="pending")acts.appendChild(btn("Assign →","btn-sm btn-primary",()=>{r.status="in_progress";render();}));
+    inner.appendChild(acts);
+    row.appendChild(inner);
+    wrap.appendChild(row);
+  });
+  return wrap;
+}
+
+function renderCertifications(){
+  return card(div({style:{textAlign:"center",padding:"40px 20px"}},
+    div({style:{fontSize:"44px",marginBottom:"12px"}},"🎓"),
+    div({style:{fontSize:"15px",fontWeight:"700",marginBottom:"8px"}},"Certifications manager"),
+    div({style:{fontSize:"12px",color:C.t3}},"Track and manage staff certifications, expiry dates and renewal triggers. Coming in the next sprint.")
+  ));
+}
+
+function renderTrainerActivity(){
+  const wrap=div({});
+  wrap.appendChild(sh("Trainer activity","This month · All regions"));
+  STATE.trainers.filter(t=>["T01","T02","T03","T04","T05"].includes(t.id)).forEach(t=>{
+    const tSessions=STATE.sessions.filter(s=>s.status!=="cancelled").length;
+    const row=div({class:"card",style:{marginBottom:"8px"}});
+    const inner=div({style:{display:"flex",alignItems:"center",gap:"12px"}});
+    inner.appendChild(div({style:{width:"36px",height:"36px",borderRadius:"50%",background:C.ewd,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"11px",fontWeight:"800",flexShrink:"0"}},initials(t.name)));
+    inner.appendChild(div({style:{flex:"1"}},
+      div({style:{fontSize:"12px",fontWeight:"700"}},t.name),
+      div({style:{fontSize:"10px",color:C.t3}},`${t.region} · ${t.specialization.join(", ")} · ${t.stores.length} stores`)
+    ));
+    inner.appendChild(div({style:{display:"flex",gap:"8px",flexShrink:"0"}},
+      span({class:"tag tag-green"},`${tSessions} sessions`),
+      span({class:"tag tag-blue"},t.roleType)
+    ));
+    row.appendChild(inner);
+    wrap.appendChild(row);
+  });
+  return wrap;
+}
+</script>
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// ASSESSMENTS
+// ═══════════════════════════════════════════════════════════════════
+function renderAssessments(){
+  const wrap=div({});
+  wrap.appendChild(div({style:{background:`linear-gradient(135deg,${C.purp},#4030A8)`,borderRadius:"12px",padding:"14px 16px",color:"#fff",marginBottom:"14px"}},
+    div({style:{fontSize:"11px",opacity:".7",textTransform:"uppercase",letterSpacing:".08em",marginBottom:"4px"}},"PRISM Assessment Engine"),
+    div({style:{fontSize:"16px",fontWeight:"800",marginBottom:"2px"}},"Assessment → Training Action Mapping"),
+    div({style:{fontSize:"11px",opacity:".8"}},"Every PRISM gap creates a Training Action automatically")
+  ));
+  const grid=div({style:{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(320px,1fr))",gap:"10px"}});
+  ASSESSMENT_MAP.forEach(am=>{
+    const sev=am.severity==="critical"?C.red:am.severity==="high"?C.amb:C.blue;
+    const course=STATE.courses.find(c=>c.id===am.cid);
+    const aCard=div({class:"card",style:{borderLeft:`4px solid ${sev}`}});
+    const hd=div({style:{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:"8px"}});
+    hd.appendChild(div({},
+      div({style:{fontSize:"12px",fontWeight:"800",color:C.t1,marginBottom:"2px"}},am.gapArea),
+      div({style:{fontSize:"10px",color:C.t3}},am.assessmentType)
+    ));
+    hd.appendChild(span({class:`tag tag-${am.severity==="critical"?"red":am.severity==="high"?"amber":"blue"}`},am.severity));
+    aCard.appendChild(hd);
+    const courseBox=div({style:{background:"#F8F8F6",borderRadius:"7px",padding:"7px 9px",marginBottom:"8px"}});
+    courseBox.appendChild(div({style:{fontSize:"9px",fontWeight:"700",color:C.t3,textTransform:"uppercase",marginBottom:"2px"}},"→ Recommended Course"));
+    courseBox.appendChild(div({style:{fontSize:"11px",fontWeight:"600",color:C.t1}},course?.name||"—"));
+    aCard.appendChild(courseBox);
+    const metaRow=div({style:{display:"flex",gap:"6px",flexWrap:"wrap",marginBottom:"6px"}});
+    metaRow.appendChild(span({class:"tag tag-gray"},`⚡ ${am.interventionType.replace("_"," ")}`));
+    metaRow.appendChild(span({class:"tag tag-blue"},`🧑‍🏫 ${am.trainerSpec}`));
+    aCard.appendChild(metaRow);
+    aCard.appendChild(div({style:{fontSize:"10px",color:C.t2,background:C.ambl,borderRadius:"6px",padding:"5px 8px"}},`↗ ${am.escalationRule}`));
+    grid.appendChild(aCard);
+  });
+  wrap.appendChild(grid);
+  return wrap;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ACADEMY
+// ═══════════════════════════════════════════════════════════════════
+function renderAcademy(){
+  const wrap=div({});
+  // Tabs
+  const tabsRow=div({style:{display:"flex",gap:"0",marginBottom:"16px",borderBottom:`1px solid ${C.b1}`}});
+  [["programs","📚 Programs & Courses"],["paths","🗺 Learning Paths"]].forEach(([t,l])=>{
+    tabsRow.appendChild(h("button",{class:`nav-tab${STATE.academyTab===t?" active":""}`,onClick:()=>{STATE.academyTab=t;render();}},l));
+  });
+  wrap.appendChild(tabsRow);
+
+  // Add Course button for admins
+  const addBtnRow=div({style:{marginBottom:"12px",display:"flex",justifyContent:"flex-end"}});
+  addBtnRow.appendChild(btn("+ Add course","btn-primary",()=>{STATE.showAddCourse=true;STATE.showCreateSession=false;render();}));
+  wrap.appendChild(addBtnRow);
+
+  if(STATE.academyTab==="programs"){
+    const grid2=div({style:{display:"grid",gridTemplateColumns:"220px 1fr",gap:"14px"}});
+    // Program list
+    const progList=div({});
+    PROGRAMS.forEach(p=>{
+      const count=STATE.courses.filter(c=>c.pid===p.id).length;
+      const item=div({style:{padding:"10px 12px",borderRadius:"9px",cursor:"pointer",marginBottom:"4px",background:STATE.academyProg===p.id?C.ewl:"transparent",border:`1px solid ${STATE.academyProg===p.id?C.ewm:C.b1}`,borderLeft:`3px solid ${STATE.academyProg===p.id?p.color:C.b1}`},onClick:()=>{STATE.academyProg=p.id;render();}});
+      item.appendChild(div({style:{fontSize:"11px",fontWeight:"700",color:STATE.academyProg===p.id?C.ewd:C.t1}},p.name));
+      item.appendChild(div({style:{fontSize:"10px",color:C.t3,marginTop:"2px"}},`${count} courses · ${p.roles.slice(0,2).join(", ")}${p.roles.length>2?` +${p.roles.length-2}`:""}`));
+      progList.appendChild(item);
+    });
+    grid2.appendChild(progList);
+
+    // Courses list
+    const prog2=PROGRAMS.find(p=>p.id===STATE.academyProg);
+    const progCourses=STATE.courses.filter(c=>c.pid===STATE.academyProg);
+    const coursesWrap=div({});
+    if(prog2){
+      const phdr=div({style:{display:"flex",alignItems:"center",gap:"10px",marginBottom:"12px"}});
+      phdr.appendChild(div({style:{width:"8px",height:"36px",borderRadius:"4px",background:prog2.color}}));
+      phdr.appendChild(div({},
+        div({style:{fontSize:"16px",fontWeight:"800",color:C.t1,letterSpacing:"-.02em"}},prog2.name),
+        div({style:{fontSize:"11px",color:C.t3}},`Target roles: ${prog2.roles.join(", ")}`)
+      ));
+      phdr.appendChild(div({style:{marginLeft:"auto"}}));
+      phdr.appendChild(btn("+ Add to this program","btn-sm btn-secondary",()=>{STATE.showAddCourse=true;render();}));
+      coursesWrap.appendChild(phdr);
+      progCourses.forEach(c=>{
+        const cCard=div({class:"card",style:{marginBottom:"7px",borderLeft:`3px solid ${ttColor(c.type)}`}});
+        const cRow=div({style:{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:"9px"}});
+        const cLeft=div({style:{flex:"1"}});
+        cLeft.appendChild(div({style:{fontSize:"12px",fontWeight:"700",color:C.t1,marginBottom:"4px"}},c.name));
+        const badges2=div({style:{display:"flex",gap:"5px",flexWrap:"wrap"}});
+        badges2.appendChild(span({class:`tag`,style:{background:ttBg(c.type),color:ttColor(c.type),fontSize:"10px"}},c.type));
+        badges2.appendChild(span({class:"tag tag-gray"},c.topic));
+        if(c.assess)badges2.appendChild(span({class:"tag tag-amber"},`Assessment · ${c.passScore}%`));
+        if(c.days)badges2.appendChild(span({class:"tag tag-gray"},`D${c.days} target`));
+        cLeft.appendChild(badges2);
+        cRow.appendChild(cLeft);
+        cRow.appendChild(div({style:{textAlign:"right",flexShrink:"0"}},
+          div({style:{fontSize:"10px",color:C.t3}},`Cap: ${c.cap}`),
+          div({style:{fontSize:"10px",color:C.t3,marginTop:"2px"}},c.roles.slice(0,2).join(", ")+(c.roles.length>2?` +${c.roles.length-2}`:""))
+        ));
+        cCard.appendChild(cRow);
+        coursesWrap.appendChild(cCard);
+      });
+    }
+    grid2.appendChild(coursesWrap);
+    wrap.appendChild(grid2);
+  } else {
+    // Learning paths
+    const pathRoles=["SA","Senior SA","SIC","SM","Optician","Optometrist"];
+    const roleTabsRow=div({style:{display:"flex",gap:"6px",flexWrap:"wrap",marginBottom:"14px"}});
+    pathRoles.forEach(r=>{
+      roleTabsRow.appendChild(h("button",{class:`btn`,style:{padding:"5px 14px",borderRadius:"20px",fontSize:"11px",fontWeight:"600",border:`1px solid ${STATE.academyPath===r?C.ewm:C.b2}`,background:STATE.academyPath===r?C.ewd:"transparent",color:STATE.academyPath===r?"#fff":C.t2},onClick:()=>{STATE.academyPath=r;render();}},r));
+    });
+    wrap.appendChild(roleTabsRow);
+    const pathCourses=STATE.courses.filter(c=>c.roles.includes(STATE.academyPath));
+    const pathHdr=div({style:{background:`linear-gradient(135deg,${C.ewd},#0e7a5a)`,borderRadius:"12px",padding:"14px 16px",color:"#fff",marginBottom:"14px"}});
+    pathHdr.appendChild(div({style:{fontSize:"14px",fontWeight:"800",marginBottom:"4px"}},`${STATE.academyPath} Learning Path`));
+    pathHdr.appendChild(div({style:{fontSize:"11px",opacity:".85"}},`${pathCourses.filter(c=>c.type==="Mandatory").length} mandatory · ${pathCourses.filter(c=>c.type==="Targeted").length} targeted · ${pathCourses.filter(c=>c.type==="Optional").length} optional · ${pathCourses.length} total`));
+    wrap.appendChild(pathHdr);
+    pathCourses.forEach((c,i)=>{
+      const cCard=div({class:"card",style:{marginBottom:"7px",borderLeft:`3px solid ${ttColor(c.type)}`,opacity:c.type==="Optional"?"0.75":"1"}});
+      const cRow=div({style:{display:"flex",alignItems:"center",gap:"10px"}});
+      cRow.appendChild(div({style:{width:"24px",height:"24px",borderRadius:"50%",background:"#F0F0EE",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"10px",fontWeight:"700",color:C.t3,flexShrink:"0"}},String(i+1)));
+      const info=div({style:{flex:"1"}});
+      info.appendChild(div({style:{fontSize:"12px",fontWeight:"700",color:C.t1,marginBottom:"3px"}},c.name));
+      const b2=div({style:{display:"flex",gap:"5px",flexWrap:"wrap"}});
+      b2.appendChild(span({class:`tag`,style:{background:ttBg(c.type),color:ttColor(c.type),fontSize:"10px"}},c.type));
+      b2.appendChild(span({class:"tag tag-gray"},c.topic));
+      if(c.assess)b2.appendChild(span({class:"tag tag-amber"},`Assessment · ${c.passScore}%`));
+      info.appendChild(b2);
+      cRow.appendChild(info);
+      cRow.appendChild(div({style:{textAlign:"right",flexShrink:"0"}},
+        c.days?div({style:{fontSize:"10px",fontWeight:"700",color:C.ewd}},`Target: Day ${c.days}`):div({style:{fontSize:"10px",color:C.t3}},c.type==="Optional"?"Self-register":"Assigned by TT"),
+        div({style:{fontSize:"10px",color:C.t3,marginTop:"2px"}},`Cap: ${c.cap}`)
+      ));
+      cCard.appendChild(cRow);
+      wrap.appendChild(cCard);
+    });
+  }
+  return wrap;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TRAINER MANAGEMENT
+// ═══════════════════════════════════════════════════════════════════
+function renderTrainerMgmt(){
+  const wrap=div({});
+  const hdrRow=div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"14px"}});
+  hdrRow.appendChild(div({},div({style:{fontSize:"15px",fontWeight:"800"}},"Trainer Management"),div({style:{fontSize:"10px",color:C.t3,marginTop:"1px"}},`${STATE.trainers.filter(t=>t.status==="active").length} active trainers across ${[...new Set(STATE.trainers.map(t=>t.region))].length} regions`)));
+  hdrRow.appendChild(btn("+ Add trainer","btn-primary",()=>{alert("Add trainer modal — coming next sprint");}));
+  wrap.appendChild(hdrRow);
+
+  // Stats
+  const statsRow=div({style:{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:"10px",marginBottom:"14px"}});
+  [["Active trainers",STATE.trainers.filter(t=>t.status==="active").length,""],["Regions",3,"KSA + UAE"],["High-risk stores",STORE_CONVERSION.filter(s=>s.riskLevel==="high_risk").length,"need trainer attention"],["New joiners",STORE_CONVERSION.reduce((a,s)=>a+s.newJoiners,0),"across all stores"]].forEach(([l,v,s])=>statsRow.appendChild(statCard(l,String(v),s)));
+  wrap.appendChild(statsRow);
+
+  const grid2=div({style:{display:"grid",gap:"10px"}});
+  STATE.trainers.forEach(t=>{
+    const myStores=STORE_CONVERSION.filter(s=>s.trainer===t.id);
+    const highRiskCount=myStores.filter(s=>s.riskLevel==="high_risk").length;
+    const roleColors={trainer:C.ew,senior_trainer:C.blue,rtm:C.purp,director:C.amb};
+    const tCard=div({class:"card",style:{borderLeft:`4px solid ${roleColors[t.roleType]||C.t3}`}});
+    const row=div({style:{display:"flex",alignItems:"flex-start",gap:"14px"}});
+    row.appendChild(div({style:{width:"44px",height:"44px",borderRadius:"50%",background:C.ewd,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"14px",fontWeight:"800",flexShrink:"0"}},initials(t.name)));
+    const info=div({style:{flex:"1",minWidth:"0"}});
+    const r1=div({style:{display:"flex",alignItems:"center",gap:"8px",marginBottom:"4px",flexWrap:"wrap"}});
+    r1.appendChild(span({style:{fontSize:"13px",fontWeight:"800",color:C.t1}},t.name));
+    r1.appendChild(span({class:"tag",style:{background:roleColors[t.roleType]+"18",color:roleColors[t.roleType],fontSize:"9px"}},t.roleType.replace("_"," ")));
+    if(t.status==="active")r1.appendChild(span({class:"tag tag-green",style:{fontSize:"9px"}},"Active"));
+    info.appendChild(r1);
+    info.appendChild(div({style:{fontSize:"10px",color:C.t3,marginBottom:"6px"}},`${t.region} · ${t.country} · Since ${t.startDate} · Manager: ${t.manager}`));
+    const specs=div({style:{display:"flex",gap:"5px",flexWrap:"wrap",marginBottom:"6px"}});
+    t.specialization.forEach(s=>specs.appendChild(span({class:"tag tag-blue",style:{fontSize:"9px"}},s)));
+    info.appendChild(specs);
+    if(myStores.length>0){
+      const storeRow=div({style:{display:"flex",gap:"5px",flexWrap:"wrap"}});
+      myStores.forEach(s=>{
+        const rm=RISK_META[s.riskLevel];
+        storeRow.appendChild(span({style:{fontSize:"9px",padding:"2px 7px",borderRadius:"20px",background:rm.bg,color:rm.color,border:`1px solid ${rm.border}`,fontWeight:"600"}},`${rm.dot} ${s.name} (${s.conv.current}%)`));
+      });
+      info.appendChild(storeRow);
+    }
+    row.appendChild(info);
+    const right2=div({style:{flexShrink:"0",display:"flex",flexDirection:"column",gap:"6px",alignItems:"flex-end"}});
+    if(highRiskCount>0)right2.appendChild(span({class:"tag tag-red"},`${highRiskCount} high risk`));
+    right2.appendChild(span({class:"tag tag-gray"},`${t.stores.length} stores`));
+    right2.appendChild(btn("Edit","btn-sm btn-ghost",()=>{alert("Edit trainer: "+t.name);}));
+    row.appendChild(right2);
+    tCard.appendChild(row);
+    grid2.appendChild(tCard);
+  });
+  wrap.appendChild(grid2);
+  return wrap;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ADMIN DASHBOARD
+// ═══════════════════════════════════════════════════════════════════
+function renderAdminDashboard(){
+  const view=VIEWS[STATE.viewIdx];
+  const highRisk=STORE_CONVERSION.filter(s=>s.riskLevel==="high_risk").length;
+  const avgConv=Math.round(STORE_CONVERSION.reduce((a,s)=>a+s.conv.current,0)/STORE_CONVERSION.length);
+
+  const wrap=div({});
+  // Hero
+  const hero=div({style:{background:`linear-gradient(135deg,${C.ewd} 0%,#145a3c 100%)`,borderRadius:"12px",padding:"16px 20px",color:"#fff",marginBottom:"14px",display:"flex",alignItems:"center",justifyContent:"space-between"}});
+  hero.appendChild(div({},
+    div({style:{fontSize:"11px",opacity:".7",textTransform:"uppercase",letterSpacing:".07em",marginBottom:"3px"}},"Conversion Performance Engine"),
+    div({style:{fontSize:"16px",fontWeight:"800",marginBottom:"2px"}},`eyewa ECIP — ${view.pill}`),
+    div({style:{fontSize:"11px",opacity:".8"}},"Week Apr 14–18 · Primary KPI: Store Conversion")
+  ));
+  const heroStats=div({style:{display:"flex",gap:"8px"}});
+  [[highRisk+" stores","High risk","🔴"],[STATE.actions.filter(a=>a.status==="open").length,"Open actions","⚡"],[STATE.trainers.filter(t=>t.status==="active").length+" active","Trainers","🧑‍🏫"],[avgConv+"%","Avg conv","📈"]].forEach(([v,l,ic])=>{
+    heroStats.appendChild(div({style:{textAlign:"center",background:"rgba(255,255,255,.13)",borderRadius:"9px",padding:"8px 12px"}},
+      div({style:{fontSize:"16px",fontWeight:"800"}},`${ic} ${v}`),
+      div({style:{fontSize:"8px",opacity:".7",marginTop:"1px"}},l)
+    ));
+  });
+  hero.appendChild(heroStats);
+  wrap.appendChild(hero);
+
+  // Quick access cards
+  const qAccess=div({style:{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:"10px",marginBottom:"14px"}});
+  [["+","Add course","btn-primary","add_course"],["+","Add session","btn-secondary","add_session"],["📈","Conversion engine","btn-ghost","conversion"],["⚡","Open actions","btn-ghost","actions"]].forEach(([ic,l,cls,action])=>{
+    const card2=div({class:"card",style:{textAlign:"center",padding:"14px",cursor:"pointer"},onClick:()=>{
+      if(action==="add_course"){STATE.showAddCourse=true;STATE.showCreateSession=false;}
+      else if(action==="add_session"){STATE.showCreateSession=true;STATE.showAddCourse=false;resetCS();}
+      else{STATE.tab=action;}
+      render();
+    }});
+    card2.appendChild(div({style:{fontSize:"22px",marginBottom:"6px"}},ic));
+    card2.appendChild(div({style:{fontSize:"11px",fontWeight:"700",color:C.ewd}},l));
+    qAccess.appendChild(card2);
+  });
+  wrap.appendChild(qAccess);
+
+  const grid2=div({style:{display:"grid",gridTemplateColumns:"2fr 1fr",gap:"12px"}});
+
+  // Left col
+  const leftCol=div({});
+  const storesCard=card([],{marginBottom:"12px"});
+  storesCard.appendChild(sh("Stores by conversion risk","Ranked lowest first · click Conversion tab for full view",btn("Open Conversion Engine →","btn-sm btn-secondary",()=>{STATE.tab="conversion";render();})));
+  [...STORE_CONVERSION].sort((a,b)=>a.conv.current-b.conv.current).slice(0,6).forEach(s=>{
+    const rm=RISK_META[s.riskLevel];const gap=s.conv.target-s.conv.current;
+    const row=div({style:{display:"flex",alignItems:"center",gap:"10px",padding:"7px 0",borderBottom:`1px solid ${C.b1}`}});
+    row.appendChild(span({style:{width:"24px",textAlign:"center",fontSize:"12px",flexShrink:"0"}},rm.dot));
+    const info=div({style:{flex:"1",minWidth:"0"}});
+    info.appendChild(div({style:{fontSize:"11px",fontWeight:"700"}},s.name," ",span({style:{fontSize:"9px",color:C.t3,fontWeight:"400"}},`· ${s.region}`)));
+    const tags=div({style:{display:"flex",gap:"4px",marginTop:"2px",flexWrap:"wrap"}});
+    s.issues.forEach(i=>{if(ISSUE_META[i])tags.appendChild(span({style:{fontSize:"8px",padding:"1px 5px",borderRadius:"10px",background:ISSUE_META[i].bg,color:ISSUE_META[i].color,fontWeight:"700"}},`${ISSUE_META[i].icon} ${ISSUE_META[i].label}`));});
+    info.appendChild(tags);row.appendChild(info);
+    const valWrap=div({style:{textAlign:"right",flexShrink:"0"}});
+    valWrap.appendChild(div({style:{fontSize:"16px",fontWeight:"800",color:rm.color,fontFamily:"monospace"}},s.conv.current+"%"));
+    if(gap>0)valWrap.appendChild(div({style:{fontSize:"9px",color:C.red,fontWeight:"600"}},gap+"pts below"));
+    row.appendChild(valWrap);
+    storesCard.appendChild(row);
+  });
+  leftCol.appendChild(storesCard);
+
+  const critCard=card([],{});
+  critCard.appendChild(sh("Critical actions — immediate attention required"));
+  STATE.actions.filter(a=>a.priority==="critical"&&a.status==="open").slice(0,4).forEach(a=>{
+    const row=div({style:{display:"flex",alignItems:"center",gap:"9px",padding:"7px 0",borderBottom:`1px solid ${C.b1}`}});
+    row.appendChild(span({style:{fontSize:"14px"}},a.sourceIcon));
+    row.appendChild(div({style:{flex:"1"}},
+      div({style:{fontSize:"11px",fontWeight:"700"}},`${a.gap} — ${a.person}`),
+      div({style:{fontSize:"10px",color:C.t3}},a.store)
+    ));
+    row.appendChild(span({class:"tag tag-red"},"Critical"));
+    critCard.appendChild(row);
+  });
+  leftCol.appendChild(critCard);
+  grid2.appendChild(leftCol);
+
+  // Right col
+  const rightCol=div({});
+  const issueDist=card([],{marginBottom:"12px"});
+  issueDist.appendChild(sh("Issue distribution","Across all stores"));
+  Object.entries(ISSUE_META).forEach(([k,v])=>{
+    const count=STORE_CONVERSION.filter(s=>s.issues.includes(k)).length;
+    if(count>0){
+      const row=div({style:{padding:"5px 0",borderBottom:`1px solid ${C.b1}`}});
+      const lbl=div({style:{display:"flex",justifyContent:"space-between",marginBottom:"2px"}});
+      lbl.appendChild(span({style:{fontSize:"10px",fontWeight:"600"}},`${v.icon} ${v.label}`));
+      lbl.appendChild(span({style:{fontSize:"10px",fontWeight:"700",color:v.color,fontFamily:"monospace"}},String(count)));
+      row.appendChild(lbl);
+      row.appendChild(bar(count,STORE_CONVERSION.length,v.color,4));
+      issueDist.appendChild(row);
+    }
+  });
+  rightCol.appendChild(issueDist);
+
+  const wlCard=card([],{});
+  wlCard.appendChild(sh("Trainer workload"));
+  STATE.trainers.filter(t=>["T01","T02","T03","T04","T05"].includes(t.id)).forEach(t=>{
+    const myHighRisk=STORE_CONVERSION.filter(s=>s.trainer===t.id&&s.riskLevel==="high_risk").length;
+    const row=div({style:{display:"flex",alignItems:"center",gap:"8px",padding:"6px 0",borderBottom:`1px solid ${C.b1}`}});
+    row.appendChild(div({style:{width:"26px",height:"26px",borderRadius:"50%",background:C.ewd,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"8px",fontWeight:"800",flexShrink:"0"}},initials(t.name)));
+    row.appendChild(div({style:{flex:"1",minWidth:"0"}},
+      div({style:{fontSize:"10px",fontWeight:"600",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},t.name),
+      div({style:{fontSize:"9px",color:C.t3}},`${t.region} · ${t.stores.length} stores`)
+    ));
+    row.appendChild(span({class:`tag tag-${myHighRisk>0?"red":"green"}`},`${myHighRisk} high risk`));
+    wlCard.appendChild(row);
+  });
+  rightCol.appendChild(wlCard);
+  grid2.appendChild(rightCol);
+  wrap.appendChild(grid2);
+  return wrap;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// CALENDAR
+// ═══════════════════════════════════════════════════════════════════
+function renderCalendar(){
+  const wrap=div({});
+  wrap.appendChild(sh("Master calendar","April 2026 · All regions",btn("+ Schedule session","btn-primary btn",()=>{STATE.showCreateSession=true;render();})));
+  // Simple month grid
+  const days=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const daysHdr=div({style:{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:"2px",marginBottom:"4px"}});
+  days.forEach(d=>daysHdr.appendChild(div({style:{textAlign:"center",fontSize:"10px",fontWeight:"700",color:C.t3,padding:"4px"}},d)));
+  wrap.appendChild(daysHdr);
+  const grid2=div({style:{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:"2px",marginBottom:"14px"}});
+  // April 2026 starts on Wednesday (3)
+  for(let i=0;i<3;i++)grid2.appendChild(div({style:{background:"transparent",minHeight:"70px"}}));
+  for(let d=1;d<=30;d++){
+    const dateStr=`2026-04-${String(d).padStart(2,"0")}`;
+    const daySessions=STATE.sessions.filter(s=>s.date===dateStr);
+    const blocked=isBlocked(dateStr);
+    const isToday=d===18;
+    const cell=div({style:{background:isToday?C.ewl:blocked?.type==="hard"?C.redl:"#fff",border:`1px solid ${isToday?C.ewm:blocked?C.redb:C.b1}`,borderRadius:"6px",padding:"4px",minHeight:"70px",cursor:daySessions.length?"pointer":"default"},onClick:()=>{if(daySessions.length)alert("Sessions on Apr "+d+":\n"+daySessions.map(s=>s.course+" · "+s.time+" · "+s.store).join("\n"));}});
+    cell.appendChild(div({style:{fontSize:"10px",fontWeight:isToday?"800":"600",color:isToday?C.ewd:blocked?C.red:C.t2,marginBottom:"3px"}},String(d)+(isToday?" ·Today":"")));
+    if(blocked)cell.appendChild(div({style:{fontSize:"8px",color:C.red,fontWeight:"600"}},blocked.label.substring(0,15)));
+    daySessions.slice(0,2).forEach(s=>cell.appendChild(div({style:{fontSize:"8px",background:typeColor(s.type)+"18",borderRadius:"3px",padding:"1px 3px",color:typeColor(s.type),fontWeight:"600",marginBottom:"2px",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},s.course.substring(0,18))));
+    if(daySessions.length>2)cell.appendChild(div({style:{fontSize:"8px",color:C.t3}},`+${daySessions.length-2} more`));
+    grid2.appendChild(cell);
+  }
+  wrap.appendChild(grid2);
+
+  // Upcoming sessions list
+  wrap.appendChild(sh("Upcoming sessions"));
+  STATE.sessions.filter(s=>s.date>="2026-04-18"&&s.status!=="completed"&&s.status!=="cancelled").sort((a,b)=>a.date.localeCompare(b.date)).forEach(s=>{
+    const row=div({class:"card",style:{marginBottom:"6px",display:"flex",alignItems:"center",gap:"10px"}});
+    row.appendChild(div({style:{width:"36px",textAlign:"center",flexShrink:"0"}},
+      div({style:{fontSize:"14px",fontWeight:"800",color:C.t1}},s.date.split("-")[2]),
+      div({style:{fontSize:"8px",color:C.t3}},"Apr")
+    ));
+    row.appendChild(div({style:{width:"3px",height:"36px",borderRadius:"2px",background:typeColor(s.type),flexShrink:"0"}}));
+    row.appendChild(div({style:{flex:"1"}},
+      div({style:{fontSize:"11px",fontWeight:"700"}},s.course),
+      div({style:{fontSize:"10px",color:C.t3}},`${typeLabel(s.type)} · ${s.time} · ${s.store} · ${s.reg}/${s.cap}`)
+    ));
+    row.appendChild(span({class:`tag tag-${s.status==="open"?"blue":s.status==="planned"?"gray":"green"}`},s.status));
+    wrap.appendChild(row);
+  });
+  return wrap;
+}
+</script>
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// MOBILE TRAINER VIEW
+// ═══════════════════════════════════════════════════════════════════
+function renderMobileTrainer(){
+  const screen=STATE.trainerScreen;
+  const myStores=STORE_CONVERSION.filter(s=>s.trainer==="T01").sort((a,b)=>RISK_META[a.riskLevel].order-RISK_META[b.riskLevel].order);
+  const highRiskStores=myStores.filter(s=>s.riskLevel==="high_risk");
+  const todaySessions=STATE.sessions.filter(s=>s.date==="2026-04-18"&&s.status!=="completed"&&s.status!=="cancelled");
+  const weekSessions=STATE.sessions.filter(s=>s.date>="2026-04-14"&&s.date<="2026-04-18"&&s.status!=="completed");
+  const myActions=STATE.actions.filter(a=>a.status==="open"||a.status==="assigned").slice(0,5);
+
+  const mcard=(children,extra={})=>div({class:"mobile-card",...extra});
+  function makeMCard(children,extra={}){const el=div({class:"mobile-card"});Object.assign(el.style,extra);(Array.isArray(children)?children:[children]).flat().filter(Boolean).forEach(c=>el.appendChild(typeof c==="string"?document.createTextNode(c):c));return el;}
+  function bbtn(label,bg,color,onclick){const b=h("button",{class:"big-btn",style:{background:bg,color:color},onClick:onclick},label);return b;}
+
+  const wrap=div({class:"mobile-frame"});
+
+  if(screen==="home"){
+    // Greeting card
+    const greet=div({style:{background:`linear-gradient(135deg,${C.ewd},#0e7a5a)`,borderRadius:"14px",padding:"16px",color:"#fff",marginBottom:"12px"}});
+    greet.appendChild(div({style:{fontSize:"11px",opacity:".7",marginBottom:"4px"}},"Saturday · Apr 18, 2026"));
+    greet.appendChild(div({style:{fontSize:"18px",fontWeight:"800",marginBottom:"2px"}},"Good morning, Mohammad 👋"));
+    greet.appendChild(div({style:{fontSize:"11px",opacity:".8"}},`${todaySessions.length} session${todaySessions.length!==1?"s":""} today · ${highRiskStores.length} stores need attention`));
+    const gStats=div({style:{display:"flex",gap:"8px",marginTop:"12px"}});
+    [[todaySessions.length,"sessions today"],[myActions.length,"open actions"],[myStores.length,"stores"]].forEach(([v,l])=>{
+      gStats.appendChild(div({style:{flex:"1",background:"rgba(255,255,255,.15)",borderRadius:"9px",padding:"8px",textAlign:"center"}},
+        div({style:{fontSize:"20px",fontWeight:"800"}},String(v)),
+        div({style:{fontSize:"9px",opacity:".75"}},l)
+      ));
+    });
+    greet.appendChild(gStats);
+    wrap.appendChild(greet);
+
+    // Today's sessions
+    if(todaySessions.length>0){
+      const sCard=makeMCard([],{});
+      sCard.appendChild(div({class:"section-header",style:{color:C.t3,marginBottom:"10px"}},"Today's sessions"));
+      todaySessions.forEach(s=>{
+        const row=div({style:{background:C.ewl,borderRadius:"10px",padding:"12px",marginBottom:"8px",cursor:"pointer",border:`1px solid ${C.ewm}`},onClick:()=>{STATE.trainerSelSession=s;STATE.trainerScreen="session";render();}});
+        const inner=div({style:{display:"flex",alignItems:"flex-start",justifyContent:"space-between"}});
+        inner.appendChild(div({},
+          div({style:{fontSize:"13px",fontWeight:"800",color:C.ewd,marginBottom:"3px"}},`${s.time} — ${s.course.substring(0,30)}`),
+          div({style:{fontSize:"11px",color:C.ewd,opacity:".8"}},`🏪 ${s.store} · ${s.dur} · ${s.reg}/${s.cap}`)
+        ));
+        inner.appendChild(span({style:{fontSize:"11px",fontWeight:"700",padding:"3px 10px",borderRadius:"20px",background:C.ewd,color:"#fff"}},"Start →"));
+        row.appendChild(inner);
+        sCard.appendChild(row);
+      });
+      wrap.appendChild(sCard);
+    }
+
+    // High risk stores
+    if(highRiskStores.length>0){
+      const hrCard=makeMCard([],{});
+      hrCard.appendChild(div({class:"section-header",style:{color:C.red,marginBottom:"10px"}},"🔴 High risk stores"));
+      highRiskStores.forEach(store=>{
+        const row=div({style:{background:C.redl,borderRadius:"10px",padding:"12px",marginBottom:"8px",cursor:"pointer",border:`1px solid ${C.redb}`},onClick:()=>{STATE.trainerSelStore=store;STATE.trainerScreen="store";render();}});
+        const inner=div({style:{display:"flex",alignItems:"center",justifyContent:"space-between"}});
+        const left2=div({});
+        left2.appendChild(div({style:{fontSize:"13px",fontWeight:"800",color:C.red}},store.name));
+        left2.appendChild(div({style:{fontSize:"11px",color:C.red,opacity:".8"}},`${store.conv.current}% conversion · Target ${store.conv.target}%`));
+        const tags2=div({style:{display:"flex",gap:"4px",marginTop:"4px",flexWrap:"wrap"}});
+        store.issues.forEach(i=>{if(ISSUE_META[i])tags2.appendChild(span({style:{fontSize:"9px",fontWeight:"700",padding:"2px 7px",borderRadius:"20px",background:ISSUE_META[i].bg,color:ISSUE_META[i].color}},`${ISSUE_META[i].icon} ${ISSUE_META[i].label}`));});
+        left2.appendChild(tags2);
+        inner.appendChild(left2);
+        inner.appendChild(div({style:{fontSize:"26px",fontWeight:"900",color:C.red,fontFamily:"monospace"}},store.conv.current+"%"));
+        row.appendChild(inner);
+        hrCard.appendChild(row);
+      });
+      wrap.appendChild(hrCard);
+    }
+
+    // Action queue
+    if(myActions.length>0){
+      const aCard=makeMCard([],{});
+      aCard.appendChild(div({class:"section-header",style:{marginBottom:"10px"}},"Action queue"));
+      myActions.forEach(a=>{
+        const pm=PRIORITY_META[a.priority];
+        const row=div({style:{display:"flex",alignItems:"center",gap:"10px",padding:"10px 0",borderBottom:`1px solid ${C.b1}`}});
+        row.appendChild(div({style:{width:"36px",height:"36px",borderRadius:"50%",background:pm.bg,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"16px",flexShrink:"0"}},a.sourceIcon));
+        row.appendChild(div({style:{flex:"1",minWidth:"0"}},
+          div({style:{fontSize:"12px",fontWeight:"700",color:C.t1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},a.gap),
+          div({style:{fontSize:"10px",color:C.t3}},a.store+" · "+a.person)
+        ));
+        row.appendChild(span({style:{fontSize:"9px",fontWeight:"700",padding:"2px 8px",borderRadius:"20px",background:pm.bg,color:pm.color,flexShrink:"0"}},pm.label));
+        aCard.appendChild(row);
+      });
+      aCard.appendChild(h("button",{style:{width:"100%",padding:"10px",background:"#F0F0EE",border:"none",borderRadius:"10px",color:C.t2,fontSize:"12px",fontWeight:"600",cursor:"pointer",marginTop:"8px"},onClick:()=>{STATE.trainerScreen="actions";render();}},"View all actions →"));
+      wrap.appendChild(aCard);
+    }
+
+    // Bottom nav
+    const bnav=div({class:"bottom-nav"});
+    [["🏠","Home","home"],["🏪","Stores","stores"],["📅","Sessions","sessions_list"],["⚡","Actions","actions_m"]].forEach(([ic,l,t])=>{
+      const b=h("button",{onClick:()=>{STATE.trainerScreen=t;render();}},
+        span({style:{fontSize:"20px"}},ic),
+        span({style:{fontSize:"9px",fontWeight:"600",color:screen===t?C.ewd:C.t3}},l)
+      );
+      bnav.appendChild(b);
+    });
+    wrap.appendChild(bnav);
+    return wrap;
+  }
+
+  const backBtn=(label="← Back",target="home")=>h("button",{style:{background:C.ewl,border:"none",borderRadius:"10px",padding:"8px 12px",cursor:"pointer",fontSize:"11px",fontWeight:"700",color:C.ewd},onClick:()=>{STATE.trainerScreen=target;render();}},label);
+
+  if(screen==="session"&&STATE.trainerSelSession){
+    const s=STATE.trainerSelSession;
+    const navRow=div({style:{display:"flex",alignItems:"center",gap:"10px",marginBottom:"14px"}});
+    navRow.appendChild(backBtn());
+    navRow.appendChild(div({style:{fontSize:"14px",fontWeight:"800",color:C.t1}},"Session"));
+    wrap.appendChild(navRow);
+
+    const sCard=makeMCard([],{borderLeft:`4px solid ${C.ew}`});
+    sCard.appendChild(div({style:{fontSize:"15px",fontWeight:"800",marginBottom:"4px"}},s.course));
+    const badge3=div({style:{display:"flex",gap:"6px",flexWrap:"wrap",marginBottom:"10px"}});
+    badge3.appendChild(span({class:`tag tag-${s.type==="virtual"?"blue":"green"}`},`${typeIcon(s.type)} ${typeLabel(s.type)}`));
+    badge3.appendChild(span({class:`tag tag-${s.trainingType==="Mandatory"?"red":"amber"}`},s.trainingType));
+    badge3.appendChild(span({class:"tag tag-gray"},`${s.date} · ${s.time}`));
+    sCard.appendChild(badge3);
+    const detGrid=div({style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px"}});
+    [["Store",s.store],["Duration",s.dur],["Enrolled",`${s.reg}/${s.cap}`],["Status",s.status]].forEach(([l,v])=>{
+      detGrid.appendChild(div({style:{background:"#F8F8F6",borderRadius:"8px",padding:"8px 10px"}},
+        div({class:"section-header",style:{marginBottom:"2px"}},l),
+        div({style:{fontSize:"11px",fontWeight:"600",color:C.t1}},v)
+      ));
+    });
+    sCard.appendChild(detGrid);
+    wrap.appendChild(sCard);
+
+    // Attendance
+    const attCard=makeMCard([],{});
+    attCard.appendChild(div({style:{fontSize:"12px",fontWeight:"700",marginBottom:"10px"}},"Mark attendance"));
+    TEAM.slice(0,Math.min(s.reg||5,TEAM.length)).forEach(person=>{
+      const row=div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 0",borderBottom:`1px solid ${C.b1}`}});
+      row.appendChild(div({},
+        div({style:{fontSize:"12px",fontWeight:"600",color:C.t1}},person.nm),
+        div({style:{fontSize:"10px",color:C.t3}},person.role)
+      ));
+      const btns2=div({style:{display:"flex",gap:"7px"}});
+      ["present","absent"].forEach(v=>{
+        const cur=STATE.sessionAttendance[person.id];
+        btns2.appendChild(h("button",{style:{padding:"6px 14px",borderRadius:"9px",cursor:"pointer",fontSize:"11px",fontWeight:"700",border:"none",background:cur===v?(v==="present"?C.ew:C.red):"#EEE",color:cur===v?"#fff":C.t3},onClick:()=>{STATE.sessionAttendance[person.id]=v;render();}},v==="present"?"✓":"✗"));
+      });
+      row.appendChild(btns2);
+      attCard.appendChild(row);
+    });
+    wrap.appendChild(attCard);
+
+    wrap.appendChild(bbtn("✅ Mark Session Complete","#fff",C.ewd,()=>{s.status="completed";STATE.trainerScreen="home";render();}));
+    if(s.status==="open"||s.status==="planned")wrap.appendChild(bbtn("🟠 Mark Delivered",C.ambl,C.amb,()=>{s.status="delivered";STATE.trainerScreen="home";render();}));
+    wrap.appendChild(bbtn("← Back to home","#EEE",C.t2,()=>{STATE.trainerScreen="home";render();}));
+    return wrap;
+  }
+
+  if(screen==="store"&&STATE.trainerSelStore){
+    const store=STATE.trainerSelStore;
+    const rm=RISK_META[store.riskLevel];
+    const navRow=div({style:{display:"flex",alignItems:"center",gap:"10px",marginBottom:"14px"}});
+    navRow.appendChild(backBtn());
+    navRow.appendChild(div({style:{fontSize:"14px",fontWeight:"800",color:C.t1}},store.name));
+    wrap.appendChild(navRow);
+    const sc=makeMCard([],{borderLeft:`4px solid ${rm.color}`});
+    const sr=div({style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:"10px"}});
+    sr.appendChild(div({},
+      span({class:`tag`,style:{background:rm.bg,color:rm.color,border:`1px solid ${rm.border}`}},`${rm.dot} ${rm.label}`),
+      div({style:{fontSize:"11px",color:C.t3,marginTop:"4px"}},`${store.city} · ${store.teamSize} staff`)
+    ));
+    sr.appendChild(div({style:{textAlign:"center"}},
+      div({style:{fontSize:"30px",fontWeight:"900",color:rm.color,fontFamily:"monospace"}},store.conv.current+"%"),
+      div({style:{fontSize:"9px",color:C.t3}},`Target: ${store.conv.target}%`)
+    ));
+    sc.appendChild(sr);
+    sc.appendChild(bar(store.conv.current,store.conv.target+10,rm.color,8));
+    const barlbl=div({style:{display:"flex",justifyContent:"space-between",marginTop:"4px",fontSize:"9px",color:C.t3}});
+    barlbl.appendChild(span({},`Last week: ${store.conv.prevWeek}%`));
+    barlbl.appendChild(span({},`Target: ${store.conv.target}%`));
+    sc.appendChild(barlbl);
+    wrap.appendChild(sc);
+    if(store.issues.length>0){
+      const iCard=makeMCard([],{});
+      iCard.appendChild(div({style:{fontSize:"12px",fontWeight:"700",marginBottom:"10px"}},"Issues identified"));
+      store.issues.forEach(issue=>{
+        const im=ISSUE_META[issue];const course2=STATE.courses.find(c=>c.id===im?.course);
+        const issueEl=div({style:{background:im?.bg,borderRadius:"10px",padding:"11px",marginBottom:"8px",border:`1px solid ${im?.color}30`}});
+        issueEl.appendChild(div({style:{fontSize:"12px",fontWeight:"700",color:im?.color}},`${im?.icon} ${im?.label}`));
+        issueEl.appendChild(div({style:{fontSize:"10px",color:C.t2,marginTop:"3px"}},im?.desc));
+        if(course2)issueEl.appendChild(div({style:{fontSize:"10px",color:C.t3,marginTop:"4px"}},`→ ${course2.name}`));
+        iCard.appendChild(issueEl);
+      });
+      wrap.appendChild(iCard);
+    }
+    wrap.appendChild(bbtn("+ Create session for this store","#fff",C.ewd,()=>{STATE.showCreateSession=true;STATE.prefillStore={name:store.name};resetCS();render();}));
+    wrap.appendChild(bbtn("← Back","#EEE","#555",()=>{STATE.trainerScreen="home";render();}));
+    return wrap;
+  }
+
+  if(screen==="stores"){
+    wrap.appendChild(div({style:{display:"flex",alignItems:"center",gap:"10px",marginBottom:"14px"}},backBtn(),div({style:{fontSize:"14px",fontWeight:"800",color:C.t1}},"My stores")));
+    myStores.forEach(store=>{
+      const rm=RISK_META[store.riskLevel];
+      const sc=makeMCard([],{cursor:"pointer",borderLeft:`4px solid ${rm.color}`});
+      sc.style.cursor="pointer";
+      sc.addEventListener("click",()=>{STATE.trainerSelStore=store;STATE.trainerScreen="store";render();});
+      const r=div({style:{display:"flex",alignItems:"center",justifyContent:"space-between"}});
+      r.appendChild(div({},
+        div({style:{fontSize:"13px",fontWeight:"800",marginBottom:"3px"}},store.name),
+        div({style:{fontSize:"10px",color:C.t3,marginBottom:"5px"}},`${store.city} · ${store.teamSize} staff`),
+        span({class:"tag",style:{background:rm.bg,color:rm.color,border:`1px solid ${rm.border}`,fontSize:"9px"}},`${rm.dot} ${rm.label}`)
+      ));
+      r.appendChild(div({style:{textAlign:"center"}},
+        div({style:{fontSize:"24px",fontWeight:"900",color:rm.color,fontFamily:"monospace"}},store.conv.current+"%"),
+        div({style:{fontSize:"9px",color:C.t3}},"conv.")
+      ));
+      sc.appendChild(r);wrap.appendChild(sc);
+    });
+    return wrap;
+  }
+
+  if(screen==="sessions_list"){
+    wrap.appendChild(div({style:{display:"flex",alignItems:"center",gap:"10px",marginBottom:"14px"}},backBtn(),div({style:{fontSize:"14px",fontWeight:"800",color:C.t1}},"This week's sessions")));
+    if(!weekSessions.length)wrap.appendChild(makeMCard([div({style:{textAlign:"center",color:C.t3,padding:"20px"}},"No upcoming sessions this week")],{}));
+    weekSessions.forEach(s=>{
+      const sc=makeMCard([],{cursor:"pointer",borderLeft:`4px solid ${typeColor(s.type)}`});
+      sc.style.cursor="pointer";
+      sc.addEventListener("click",()=>{STATE.trainerSelSession=s;STATE.trainerScreen="session";render();});
+      const r=div({style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}});
+      r.appendChild(div({},
+        div({style:{fontSize:"13px",fontWeight:"800",marginBottom:"3px"}},s.course),
+        div({style:{fontSize:"11px",color:C.t3}},`📅 ${s.date} · ${s.time} · ${s.dur}`),
+        div({style:{fontSize:"11px",color:C.t3}},`🏪 ${s.store} · ${s.reg}/${s.cap}`)
+      ));
+      r.appendChild(span({class:`tag tag-${s.status==="completed"?"green":s.status==="open"?"blue":"gray"}`},s.status));
+      sc.appendChild(r);wrap.appendChild(sc);
+    });
+    return wrap;
+  }
+
+  if(screen==="actions_m"){
+    wrap.appendChild(div({style:{display:"flex",alignItems:"center",gap:"10px",marginBottom:"14px"}},backBtn(),div({style:{fontSize:"14px",fontWeight:"800",color:C.t1}},"Action queue")));
+    STATE.actions.filter(a=>a.status!=="completed"&&a.status!=="cancelled").forEach(a=>{
+      const pm=PRIORITY_META[a.priority];
+      const sc=makeMCard([],{borderLeft:`4px solid ${pm.color}`});
+      const r=div({style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:"6px"}});
+      r.appendChild(div({style:{fontSize:"13px",fontWeight:"800"}},a.gap));
+      r.appendChild(span({class:`tag`,style:{background:pm.bg,color:pm.color}},pm.label));
+      sc.appendChild(r);
+      sc.appendChild(div({style:{fontSize:"10px",color:C.t3,marginBottom:"6px"}},`${a.store} · ${a.person} · Due ${a.due}`));
+      if(a.notes)sc.appendChild(div({style:{fontSize:"10px",color:C.t2,background:"#F8F8F6",borderRadius:"7px",padding:"6px 9px",marginBottom:"8px"}},a.notes));
+      const actBtns=div({style:{display:"flex",gap:"7px"}});
+      if(a.status==="open"){actBtns.appendChild(btn("Assign","btn-sm btn-primary",()=>{a.status="assigned";render();}));actBtns.appendChild(btn("Schedule","btn-sm btn-secondary",()=>{a.status="scheduled";render();}));}
+      if(a.status==="assigned")actBtns.appendChild(btn("Mark Scheduled","btn-sm btn-secondary",()=>{a.status="scheduled";render();}));
+      sc.appendChild(actBtns);
+      wrap.appendChild(sc);
+    });
+    return wrap;
+  }
+  return wrap;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SM DASHBOARD
+// ═══════════════════════════════════════════════════════════════════
+function renderSMDashboard(){
+  const store=STORE_CONVERSION.find(s=>s.id==="S01");
+  const rm=RISK_META[store.riskLevel];
+  const upSessions=STATE.sessions.filter(s=>(s.store.includes("Al Yasmin")||s.store.includes("Virtual"))&&s.status!=="completed"&&s.status!=="cancelled").slice(0,5);
+  const storeActions=STATE.actions.filter(a=>a.store===store.name&&a.status!=="completed");
+  const wrap=div({});
+
+  // Header
+  const hdr=div({style:{background:`linear-gradient(135deg,${C.ewd},#145a3c)`,borderRadius:"12px",padding:"14px 16px",color:"#fff",marginBottom:"14px"}});
+  const hr=div({style:{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:"12px"}});
+  hr.appendChild(div({},
+    div({style:{fontSize:"10px",opacity:".7",marginBottom:"3px"}},"Al Yasmin Mall · Ahmed Asiri · Store Manager"),
+    div({style:{fontSize:"16px",fontWeight:"800",marginBottom:"2px"}},"Store Performance Dashboard"),
+    div({style:{fontSize:"11px",opacity:".8"}},"Week of Apr 14–18, 2026")
+  ));
+  hr.appendChild(div({style:{textAlign:"right"}},
+    div({style:{fontSize:"32px",fontWeight:"900",color:C.ambb,fontFamily:"monospace"}},store.conv.current+"%"),
+    div({style:{fontSize:"9px",opacity:".7"}},"conversion")
+  ));
+  hdr.appendChild(hr);
+  const qs=div({style:{display:"flex",gap:"8px"}});
+  [[store.conv.target+"%","Target"],[store.conv.prevWeek+"%","Last week"],[store.teamSize+" staff","Team"],[store.mandatoryPct+"%","Mandatory"]].forEach(([v,l])=>{
+    qs.appendChild(div({style:{flex:"1",background:"rgba(255,255,255,.12)",borderRadius:"8px",padding:"7px",textAlign:"center"}},
+      div({style:{fontSize:"14px",fontWeight:"800"}},v),
+      div({style:{fontSize:"8px",opacity:".7",marginTop:"1px"}},l)
+    ));
+  });
+  hdr.appendChild(qs);
+  wrap.appendChild(hdr);
+
+  // Tabs
+  const tabsRow=div({style:{display:"flex",gap:"0",borderBottom:`1px solid ${C.b1}`,marginBottom:"14px"}});
+  [["overview","📊 Overview"],["training","📅 Training"],["team","👥 Team"],["requests","📩 Requests"]].forEach(([t,l])=>{
+    tabsRow.appendChild(h("button",{class:`nav-tab${STATE.smTab===t?" active":""}`,onClick:()=>{STATE.smTab=t;render();}},l));
+  });
+  wrap.appendChild(tabsRow);
+
+  if(STATE.smTab==="overview"){
+    const grid2=div({style:{display:"grid",gridTemplateColumns:"2fr 1fr",gap:"12px"}});
+    const left2=div({});
+
+    const convCard=card([],{marginBottom:"12px"});
+    convCard.appendChild(sh("Conversion this week",`Target: ${store.conv.target}%`));
+    const cRow=div({style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"10px",marginBottom:"10px"}});
+    [[store.conv.current+"%","This week",rm.color],[store.conv.prevWeek+"%","Last week",C.t3],[store.conv.prevMonth+"%","Last month",C.t3]].forEach(([v,l,col])=>{
+      cRow.appendChild(div({style:{background:"#F8F8F6",borderRadius:"9px",padding:"10px",textAlign:"center"}},
+        div({style:{fontSize:"22px",fontWeight:"800",color:col,fontFamily:"monospace"}},v),
+        div({style:{fontSize:"9px",color:C.t3,marginTop:"2px"}},l)
+      ));
+    });
+    convCard.appendChild(cRow);
+    convCard.appendChild(bar(store.conv.current,70,rm.color,8));
+    left2.appendChild(convCard);
+
+    if(store.issues.length>0){
+      const issueCard=card([],{marginBottom:"12px"});
+      issueCard.appendChild(sh("Why conversion is below target","Issues identified by the system"));
+      store.issues.forEach(issue=>{
+        const im=ISSUE_META[issue];const course2=STATE.courses.find(c=>c.id===im?.course);
+        const el=div({style:{background:im?.bg,borderRadius:"10px",padding:"11px 13px",marginBottom:"8px",border:`1px solid ${im?.color}30`,borderLeft:`3px solid ${im?.color}`}});
+        el.appendChild(div({style:{fontSize:"12px",fontWeight:"700",color:im?.color,marginBottom:"3px"}},`${im?.icon} ${im?.label}`));
+        el.appendChild(div({style:{fontSize:"10px",color:C.t2,marginBottom:"4px"}},im?.desc));
+        if(course2)el.appendChild(div({style:{fontSize:"10px",color:C.t3}},`Recommended: `,span({style:{fontWeight:"700",color:C.ewd}},course2.name)));
+        issueCard.appendChild(el);
+      });
+      left2.appendChild(issueCard);
+    }
+
+    if(storeActions.length>0){
+      const actCard=card([],{});
+      actCard.appendChild(sh("Training actions","System-generated · being actioned"));
+      storeActions.slice(0,4).forEach(a=>{
+        const row=div({style:{display:"flex",alignItems:"flex-start",gap:"10px",padding:"8px 0",borderBottom:`1px solid ${C.b1}`}});
+        row.appendChild(span({style:{fontSize:"14px",flexShrink:"0"}},a.sourceIcon));
+        row.appendChild(div({style:{flex:"1"}},
+          div({style:{fontSize:"11px",fontWeight:"700"}},a.gap),
+          div({style:{fontSize:"10px",color:C.t3}},a.person+" · "+a.course?.substring(0,30)+(a.course?.length>30?"…":""))
+        ));
+        row.appendChild(span({class:`tag tag-${a.status==="scheduled"?"blue":a.status==="assigned"?"amber":"gray"}`},a.status));
+        actCard.appendChild(row);
+      });
+      left2.appendChild(actCard);
+    }
+    grid2.appendChild(left2);
+
+    const right2=div({});
+    const visitCard=card([],{marginBottom:"12px"});
+    visitCard.appendChild(sh("Next trainer visit"));
+    if(store.nextVisit){
+      visitCard.appendChild(div({style:{background:C.ewl,borderRadius:"9px",padding:"11px",border:`1px solid ${C.ewm}`,textAlign:"center"}},
+        div({style:{fontSize:"16px",fontWeight:"800",color:C.ewd,marginBottom:"2px"}},store.nextVisit),
+        div({style:{fontSize:"10px",color:C.ewd}},"Mohammad Othman"),
+        div({style:{fontSize:"10px",color:C.ewd,marginTop:"2px"}},"CLARIVO Coaching")
+      ));
+    } else {
+      visitCard.appendChild(div({style:{background:"#F8F8F6",borderRadius:"9px",padding:"11px",textAlign:"center"}},
+        div({style:{fontSize:"12px",color:C.red,fontWeight:"600",marginBottom:"6px"}},"No visit scheduled"),
+        btn("Request trainer visit","btn-sm btn-secondary",()=>{alert("Request submitted");})
+      ));
+    }
+    right2.appendChild(visitCard);
+
+    const sessCard=card([],{marginBottom:"12px"});
+    sessCard.appendChild(sh("Upcoming sessions"));
+    upSessions.slice(0,3).forEach(s=>{
+      const row=div({style:{padding:"7px 0",borderBottom:`1px solid ${C.b1}`}});
+      row.appendChild(div({style:{fontSize:"11px",fontWeight:"600"}},s.course.length>28?s.course.substring(0,28)+"…":s.course));
+      row.appendChild(div({style:{fontSize:"9px",color:C.t3}},`${s.date} · ${s.time} · ${s.reg}/${s.cap}`));
+      if(s.status==="open")row.appendChild(btn("Nominate staff →","btn-sm btn-secondary",()=>{alert("Nominate staff for: "+s.course);}));
+      sessCard.appendChild(row);
+    });
+    right2.appendChild(sessCard);
+
+    right2.appendChild(card(div({style:{fontSize:"11px",color:C.ewd,lineHeight:"1.7"}},
+      div({style:{fontWeight:"700",marginBottom:"6px"}},"💡 Training insight"),
+      `Your store is ${store.conv.target-store.conv.current}pts below target. Discovery and objection skills are the primary gaps. The next trainer visit covers CLARIVO coaching — ensure full team presence.`
+    ),{background:C.ewl,border:`1px solid ${C.ewm}`}));
+    grid2.appendChild(right2);
+    wrap.appendChild(grid2);
+  }
+
+  else if(STATE.smTab==="training"){
+    const tCard=card([],{});
+    tCard.appendChild(sh("Training calendar","Sessions for your store",btn("+ Request training","btn-sm btn-secondary",()=>{STATE.smTab="requests";render();})));
+    upSessions.forEach(s=>{
+      const row=div({style:{display:"flex",alignItems:"center",gap:"9px",padding:"9px 0",borderBottom:`1px solid ${C.b1}`}});
+      row.appendChild(div({style:{width:"40px",textAlign:"center",flexShrink:"0"}},
+        div({style:{fontSize:"15px",fontWeight:"800"}},s.date.split("-")[2]),
+        div({style:{fontSize:"9px",color:C.t3}},"Apr")
+      ));
+      row.appendChild(div({style:{width:"3px",height:"36px",borderRadius:"2px",background:typeColor(s.type),flexShrink:"0"}}));
+      row.appendChild(div({style:{flex:"1"}},
+        div({style:{fontSize:"11px",fontWeight:"700"}},s.course),
+        div({style:{fontSize:"10px",color:C.t3}},`${typeLabel(s.type)} · ${s.time} · ${s.store}`)
+      ));
+      const right3=div({style:{flexShrink:"0"}});
+      right3.appendChild(div({style:{fontSize:"10px",color:C.t3}},`${s.reg}/${s.cap}`));
+      if(s.status==="open")right3.appendChild(btn("Nominate →","btn-sm btn-secondary",()=>{alert("Nominate staff for: "+s.course);}));
+      row.appendChild(right3);
+      tCard.appendChild(row);
+    });
+    wrap.appendChild(tCard);
+  }
+
+  else if(STATE.smTab==="team"){
+    const tCard=card([],{});
+    tCard.appendChild(sh("My team — Al Yasmin Mall","11 staff · training status"));
+    const table=h("table",{style:{width:"100%",borderCollapse:"collapse",fontSize:"11px"}});
+    const thead=h("thead",{}),tr0=h("tr",{});
+    ["Name","Role","Score","Mandatory","Status"].forEach(col=>tr0.appendChild(h("th",{style:{fontSize:"9px",fontWeight:"700",color:C.t3,padding:"5px 8px",borderBottom:`1px solid ${C.b1}`,textAlign:"left",textTransform:"uppercase",letterSpacing:".05em"}},col)));
+    thead.appendChild(tr0);table.appendChild(thead);
+    const tbody=h("tbody",{});
+    TEAM.forEach(s=>{
+      const pct=Math.round(s.mandatory_done/s.mandatory_total*100);
+      const tr=h("tr",{});
+      tr.appendChild(h("td",{style:{padding:"7px 8px",borderBottom:`1px solid ${C.b1}`,fontWeight:"700"}},s.nm));
+      tr.appendChild(h("td",{style:{padding:"7px 8px",borderBottom:`1px solid ${C.b1}`}},span({class:"tag tag-gray"},s.role)));
+      tr.appendChild(h("td",{style:{padding:"7px 8px",borderBottom:`1px solid ${C.b1}`}},span({class:`tag tag-${s.score>=80?"green":s.score>=65?"amber":"red"}`},s.score+"%")));
+      const prog2=h("td",{style:{padding:"7px 8px",borderBottom:`1px solid ${C.b1}`}});
+      const pbar=div({style:{display:"flex",alignItems:"center",gap:"5px"}});
+      pbar.appendChild(div({style:{width:"40px",height:"4px",background:"#EEE",borderRadius:"2px",overflow:"hidden"}},div({style:{height:"100%",background:pctColor(pct),width:pct+"%"}})));
+      pbar.appendChild(span({style:{fontSize:"10px",color:pctColor(pct),fontWeight:"600"}},`${s.mandatory_done}/${s.mandatory_total}`));
+      prog2.appendChild(pbar);tr.appendChild(prog2);
+      const flag=h("td",{style:{padding:"7px 8px",borderBottom:`1px solid ${C.b1}`}});
+      if(s.score<65)flag.appendChild(span({class:"tag tag-red"},"Gap"));
+      else if(s.ll==="inactive")flag.appendChild(span({class:"tag tag-amber"},"Inactive"));
+      else flag.textContent="—";
+      tr.appendChild(flag);
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    tCard.appendChild(table);
+    wrap.appendChild(tCard);
+  }
+
+  else if(STATE.smTab==="requests"){
+    const rCard=card([],{});
+    rCard.appendChild(sh("Training requests","Al Yasmin Mall",btn("+ New request","btn-sm btn-primary",()=>{alert("Request form — opens in next sprint");})));
+    [{t:"Insurance refresher",status:"Scheduled · Apr 10",v:"green"},{t:"Rimless brand module",status:"In progress",v:"amber"}].forEach(r=>{
+      const row=div({style:{padding:"10px 0",borderBottom:`1px solid ${C.b1}`}});
+      const inner=div({style:{display:"flex",justifyContent:"space-between",alignItems:"center"}});
+      inner.appendChild(div({style:{fontSize:"12px",fontWeight:"700"}},r.t));
+      inner.appendChild(span({class:`tag tag-${r.v}`},r.status));
+      row.appendChild(inner);
+      rCard.appendChild(row);
+    });
+    wrap.appendChild(rCard);
+  }
+  return wrap;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// MAIN RENDER
+// ═══════════════════════════════════════════════════════════════════
+function render(){
+  const app=document.getElementById("app");
+  app.innerHTML="";
+
+  const topBar=renderTopBar();
+  app.appendChild(topBar);
+
+  const view=VIEWS[STATE.viewIdx];
+  const isMobile=STATE.viewIdx===0;
+  const main=div({style:{flex:"1",overflowY:"auto",padding:isMobile?"12px":"0",background:isMobile?"#F5F5F3":C.bg,display:"flex",flexDirection:"column"}});
+
+  let content=null;
+
+  if(isMobile){
+    if(STATE.showCreateSession){content=renderCreateSession();}
+    else content=renderMobileTrainer();
+  } else {
+    const wrapStyle={flex:"1",overflowY:"auto",padding:"16px 18px"};
+    if(STATE.tab==="content"&&!STATE.showCreateSession&&!STATE.showAddCourse){
+      // Content admin has its own layout with left nav
+      const contentWrap=div({style:{flex:"1",display:"flex",overflow:"hidden"}});
+      contentWrap.appendChild(renderContentAdmin());
+      main.appendChild(contentWrap);
+      app.appendChild(main);
+      return;
+    }
+    const contentPad=div({style:wrapStyle});
+    if(STATE.showAddCourse){contentPad.appendChild(renderAddCourse());}
+    else if(STATE.showCreateSession){contentPad.appendChild(renderCreateSession());}
+    else if(STATE.tab==="dashboard")contentPad.appendChild(renderAdminDashboard());
+    else if(STATE.tab==="conversion")contentPad.appendChild(renderConversionEngine());
+    else if(STATE.tab==="actions")contentPad.appendChild(renderActions());
+    else if(STATE.tab==="sessions")contentPad.appendChild(renderSessions());
+    else if(STATE.tab==="calendar")contentPad.appendChild(renderCalendar());
+    else if(STATE.tab==="assessments")contentPad.appendChild(renderAssessments());
+    else if(STATE.tab==="trainers")contentPad.appendChild(renderTrainerMgmt());
+    else if(STATE.tab==="academy")contentPad.appendChild(renderAcademy());
+    else if(STATE.tab==="sm_conv")contentPad.appendChild(renderSMDashboard());
+    else contentPad.appendChild(div({style:{color:C.t3,padding:"24px"}},"Select a tab"));
+    main.appendChild(contentPad);
+  }
+
+  if(isMobile&&content){const wrap=div({style:{maxWidth:"430px",margin:"0 auto"}});wrap.appendChild(content);main.appendChild(wrap);}
+
+  app.appendChild(main);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════
+render();
+</script>
+</body>
+</html>
