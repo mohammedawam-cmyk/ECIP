@@ -4,66 +4,425 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>eyewa Store Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#F0F0EE;color:#16161A;font-size:13px;min-height:100vh}
-button{font-family:inherit;cursor:pointer;border:none;outline:none}
-input,select,textarea{font-family:inherit}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#F5F0E8;--bg2:#EDE8DC;--card:#fff;--border:#DDD5C4;--border2:#C8BFA8;
+  --g:#1DB954;--gd:#158A3E;--gl:rgba(29,185,84,.1);--gb:rgba(29,185,84,.22);
+  --t1:#18181A;--t2:#44444C;--t3:#767676;--t4:#ABABAB;
+  --red:#D93025;--redbg:rgba(217,48,37,.08);--amb:#C07818;--ambbg:rgba(192,120,24,.08);
+  --blue:#1A56DB;--bluebg:rgba(26,86,219,.08);--purp:#7C3AED;--purpbg:rgba(124,58,237,.08);
+  --sh:0 1px 3px rgba(0,0,0,.07),0 2px 8px rgba(0,0,0,.05);--ease:cubic-bezier(.16,1,.3,1)}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t1);font-size:13px;min-height:100vh;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;border:none;outline:none;transition:all .15s var(--ease)}
+input,select,textarea{font-family:inherit;outline:none;transition:all .15s}
+@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes in{from{opacity:0}to{opacity:1}}
+@keyframes sc{from{opacity:0;transform:scale(.96) translateY(6px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes pu{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* LOGIN */
+#login{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;background-image:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(29,185,84,.1) 0%,transparent 60%)}
+.lb{width:100%;max-width:380px;animation:up .4s var(--ease)}
+.lb-brand{display:flex;align-items:center;gap:9px;margin-bottom:6px}
+.lb-icon{width:32px;height:32px;background:var(--g);border-radius:9px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(29,185,84,.32)}
+.lb-icon svg{width:16px;height:16px;fill:#fff}
+.lb-name{font-size:19px;font-weight:800;letter-spacing:-.4px}
+.lb-sub{font-size:11px;color:var(--t3);margin-bottom:28px;padding-left:41px}
+.lb-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px;box-shadow:var(--sh)}
+.lf{margin-bottom:13px}
+.lf label{display:block;font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.li{width:100%;background:var(--bg2);border:1.5px solid var(--border);border-radius:9px;padding:10px 12px;font-size:13px;color:var(--t1)}
+.li:focus{border-color:var(--g);background:var(--card);box-shadow:0 0 0 3px var(--gl)}
+.li::placeholder{color:var(--t4)}
+.le{display:none;font-size:11px;color:var(--red);margin-bottom:11px;background:var(--redbg);padding:7px 10px;border-radius:7px;border-left:3px solid var(--red)}
+.lbtn{width:100%;padding:12px;background:var(--g);border-radius:9px;color:#fff;font-size:13px;font-weight:700;box-shadow:0 3px 10px rgba(29,185,84,.3)}
+.lbtn:hover{background:var(--gd);transform:translateY(-1px)}
+.lhint{margin-top:12px;font-size:10px;color:var(--t4);text-align:center}
+
+/* APP */
+#app{display:none;min-height:100vh;flex-direction:column}
+.topbar{background:var(--g);padding:14px 16px;color:#fff;position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center}
+.tb-l{flex:1;min-width:0}
+.tb-sname{font-size:14px;font-weight:800;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-sm{font-size:10px;opacity:.75}
+.tb-r{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.tb-conv{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;line-height:1}
+.tb-out{background:rgba(255,255,255,.15);border:none;border-radius:7px;padding:5px 10px;color:#fff;font-size:10px;font-weight:600}
+.tab-nav{display:flex;overflow-x:auto;background:var(--card);border-bottom:1px solid var(--border)}.tab-nav::-webkit-scrollbar{display:none}
+.tab-btn{height:44px;padding:0 15px;background:none;border:none;border-bottom:2px solid transparent;font-size:11px;font-weight:600;color:var(--t3);white-space:nowrap;transition:all .15s}
+.tab-btn:hover{color:var(--t2)}.tab-btn.on{color:var(--g);border-bottom-color:var(--g);font-weight:700}
+.main{padding:15px;flex:1}
+.card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:15px;box-shadow:var(--sh);margin-bottom:12px}
+.tag{display:inline-flex;align-items:center;font-size:9px;padding:2px 7px;border-radius:20px;font-weight:700;white-space:nowrap}
+.tg{background:var(--gl);color:var(--g);border:1px solid var(--gb)}.tr{background:var(--redbg);color:var(--red);border:1px solid rgba(217,48,37,.2)}
+.ta{background:var(--ambbg);color:var(--amb);border:1px solid rgba(192,120,24,.2)}.tx{background:var(--bg2);color:var(--t3);border:1px solid var(--border)}
+.tb2{background:var(--bluebg);color:var(--blue);border:1px solid rgba(26,86,219,.2)}.tp{background:var(--purpbg);color:var(--purp);border:1px solid rgba(124,58,237,.2)}
+.btn{padding:8px 15px;border-radius:9px;font-size:11px;font-weight:700;border:1px solid transparent;transition:all .15s var(--ease)}
+.bp{background:var(--g);color:#fff;box-shadow:0 2px 7px rgba(29,185,84,.28)}.bp:hover{background:var(--gd)}
+.bg2{background:transparent;border-color:var(--border);color:var(--t3)}.bg2:hover{background:var(--bg2)}
+.inp{width:100%;background:var(--bg2);border:1.5px solid var(--border);border-radius:8px;padding:9px 11px;font-size:12px;color:var(--t1)}
+.inp:focus{border-color:var(--g);background:var(--card);box-shadow:0 0 0 3px var(--gl)}
+.inp::placeholder{color:var(--t4)}
+.pb{height:4px;background:var(--bg2);border-radius:4px;overflow:hidden}.pbf{height:100%;border-radius:4px;transition:width .6s var(--ease)}
+.mo{position:fixed;inset:0;background:rgba(20,20,20,.5);backdrop-filter:blur(5px);display:flex;align-items:flex-end;justify-content:center;z-index:500;padding:0;animation:in .2s}
+.mo-box{background:var(--card);border-radius:18px 18px 0 0;padding:24px;width:100%;max-width:500px;animation:sc .25s var(--ease);max-height:90vh;overflow-y:auto}
+.mo-box h3{font-size:16px;font-weight:800;margin-bottom:3px}
+.mo-sub{font-size:11px;color:var(--t3);margin-bottom:16px}
+.mf{margin-bottom:12px}.mf label{display:block;font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+.ma{display:flex;gap:7px;margin-top:18px}
+#toasts{position:fixed;bottom:16px;right:16px;z-index:2000;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.toast{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:12px;font-weight:600;animation:up .25s var(--ease);display:flex;align-items:center;gap:7px;box-shadow:0 4px 14px rgba(0,0,0,.12);pointer-events:all}
+.toast.ok{border-left:3px solid var(--g)}.toast.err{border-left:3px solid var(--red)}
 </style>
 </head>
 <body>
-<div id="login-screen" style="position:fixed;inset:0;background:linear-gradient(135deg,#0a5c43,#1D9E75);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px">
-<div style="background:#fff;border-radius:24px;padding:36px 28px;width:100%;max-width:400px">
-<div style="font-size:30px;font-weight:900;color:#0a5c43">eyewa SM</div>
-<input id="l-code" type="text" placeholder="Store code e.g. PAM" style="width:100%;border:2px solid #E6E6E2;border-radius:12px;padding:13px;font-size:14px;margin:16px 0 10px;outline:none">
-<input id="l-pass" type="password" placeholder="Password" style="width:100%;border:2px solid #E6E6E2;border-radius:12px;padding:13px;font-size:14px;margin-bottom:16px;outline:none">
-<div id="l-err" style="color:red;font-size:11px;margin-bottom:10px;display:none">Incorrect</div>
-<button onclick="doLogin()" style="width:100%;padding:15px;background:#0a5c43;border:none;border-radius:14px;color:#fff;font-size:16px;font-weight:800;cursor:pointer">Enter →</button>
-<div style="margin-top:14px;font-size:10px;color:#aaa;text-align:center">Password = store code lowercase. e.g. PAM → pam</div>
+<div id="toasts"></div>
+
+<div id="login">
+  <div class="lb">
+    <div class="lb-brand">
+      <div class="lb-icon"><svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg></div>
+      <span class="lb-name">eyewa ECIP</span>
+    </div>
+    <div class="lb-sub">Store Manager Portal · KSA</div>
+    <div class="lb-card">
+      <div class="lf"><label>Store code</label><input class="li" id="sc" type="text" placeholder="e.g. PAM" autocomplete="off"></div>
+      <div class="lf" style="margin-bottom:18px"><label>Password</label><input class="li" id="sp" type="password" placeholder="••••••••"></div>
+      <div class="le" id="lerr"></div>
+      <button class="lbtn" onclick="doLogin()">Enter →</button>
+    </div>
+    <div class="lhint">Default password = store code lowercase · e.g. PAM → pam</div>
+  </div>
 </div>
+
+<div id="app" style="display:none;flex-direction:column">
+  <div class="topbar">
+    <div class="tb-l">
+      <div class="tb-sname" id="sname">Store</div>
+      <div class="tb-sm" id="smname">Store Manager</div>
+    </div>
+    <div class="tb-r">
+      <div class="tb-conv" id="conv-disp">—%</div>
+      <button class="tb-out" onclick="doLogout()">Out</button>
+    </div>
+  </div>
+  <div class="tab-nav" id="tabs"></div>
+  <div class="main" id="main"></div>
 </div>
-<div id="app" style="display:none">
-<div style="background:#0a5c43;padding:14px 18px;color:#fff;position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center">
-<div>
-<div style="font-size:14px;font-weight:800" id="topbar-store">Store</div>
-<div style="font-size:10px;opacity:.7" id="topbar-sm">Manager</div>
-</div>
-<div style="display:flex;align-items:center;gap:10px">
-<div style="font-size:26px;font-weight:900;font-family:monospace" id="topbar-conv">—%</div>
-<button onclick="logout()" style="background:rgba(255,255,255,.15);border:none;border-radius:8px;padding:5px 10px;color:#fff;font-size:10px;font-weight:600;cursor:pointer">Out</button>
-</div>
-</div>
-<div style="display:flex;overflow-x:auto;background:#fff;border-bottom:1px solid #E6E6E2" id="tabs-nav">
-<button onclick="switchTab('overview')" style="height:44px;padding:0 16px;background:none;border:none;border-bottom:2px solid #1D9E75;font-size:11px;font-weight:700;color:#0a5c43;cursor:pointer;white-space:nowrap">📊 Overview</button>
-<button onclick="switchTab('team')" style="height:44px;padding:0 16px;background:none;border:none;border-bottom:2px solid transparent;font-size:11px;font-weight:700;color:#888;cursor:pointer;white-space:nowrap">👥 My Team</button>
-<button onclick="switchTab('sessions')" style="height:44px;padding:0 16px;background:none;border:none;border-bottom:2px solid transparent;font-size:11px;font-weight:700;color:#888;cursor:pointer;white-space:nowrap">📅 Sessions</button>
-<button onclick="switchTab('requests')" style="height:44px;padding:0 16px;background:none;border:none;border-bottom:2px solid transparent;font-size:11px;font-weight:700;color:#888;cursor:pointer;white-space:nowrap">📩 Requests</button>
-</div>
-<div style="padding:16px" id="main-content"></div>
-</div>
+
 <script>
-const STORES={PAM:{name:'Panorama Mall',smName:'Sara Zaid Alanazi',pass:'pam',region:'Central',conv:{current:51,target:55,prevWeek:53},mandatory:72,staff:11,issues:['discovery_gap'],riskLevel:'medium'},REM:{name:'Red Sea Mall',smName:'Ahmed Abdullah Asiri',pass:'rem',region:'Western',conv:{current:40,target:55,prevWeek:43},mandatory:33,staff:10,issues:['onboarding_gap','discovery_gap'],riskLevel:'high_risk'},NKL:{name:'Nakheel Mall',smName:'TBA',pass:'nkl',region:'Central',conv:{current:42,target:55,prevWeek:40},mandatory:50,staff:9,issues:['objection_handling'],riskLevel:'high_risk'},MAD:{name:'Dareen Mall',smName:'Hadeel Alshorman',pass:'mad',region:'Eastern',conv:{current:44,target:55,prevWeek:46},mandatory:64,staff:9,issues:['discovery_gap'],riskLevel:'high_risk'},RPT:{name:'Riyadh Park',smName:'Yazan Alqarni',pass:'rpt',region:'Central',conv:{current:62,target:55,prevWeek:60},mandatory:88,staff:9,issues:[],riskLevel:'stable'},MOA:{name:'Mall of Arabia',smName:'Ahmed Shawish',pass:'moa',region:'Western',conv:{current:35,target:55,prevWeek:38},mandatory:42,staff:9,issues:['product_knowledge','onboarding_gap'],riskLevel:'high_risk'},KKA:{name:'King Khalid Airport',smName:'Sarah Alobaid',pass:'kka',region:'Central',conv:{current:64,target:55,prevWeek:62},mandatory:90,staff:8,issues:[],riskLevel:'top_performer'},GRD:{name:'Gulf Rd',smName:'Dina Aldossary',pass:'grd',region:'Eastern',conv:{current:49,target:55,prevWeek:50},mandatory:68,staff:8,issues:['engagement_gap'],riskLevel:'medium'}};
-const IM={discovery_gap:{label:'Discovery Gap',color:'#D03535',bg:'#FDF0F0',icon:'🎯',course:'Needs Discovery'},objection_handling:{label:'Objection Handling',color:'#D03535',bg:'#FDF0F0',icon:'🛡',course:'Objection Handling'},product_knowledge:{label:'Product Knowledge',color:'#C07818',bg:'#FEF4E8',icon:'📦',course:'CLARIVO Lens'},engagement_gap:{label:'Engagement Gap',color:'#C07818',bg:'#FEF4E8',icon:'💬',course:'Guest Experience'},onboarding_gap:{label:'Onboarding Gap',color:'#6040D8',bg:'#EEEAFC',icon:'🆕',course:'Retail Induction'}};
-let CS=null,CT='overview';
-const SESSIONS=[{id:'S1',course:'CLARIVO Progressive Lens',date:'2026-05-05',time:'09:00',dur:'3h',type:'classroom',trainer:'Mohammad Othman',cap:15,enrolled:0,status:'open'},{id:'S2',course:'Guest Experience Phase 2',date:'2026-05-12',time:'14:00',dur:'2h',type:'instore',trainer:'Mohammad Othman',cap:12,enrolled:0,status:'planned'},{id:'S3',course:'Insurance Protocol',date:'2026-04-10',time:'18:00',dur:'3h',type:'virtual',trainer:'Mohammad Othman',cap:50,enrolled:8,status:'completed'}];
-let REQS=[];
-function doLogin(){const code=document.getElementById('l-code').value.trim().toUpperCase();const pass=document.getElementById('l-pass').value.trim();const s=STORES[code];if(s&&s.pass===pass){document.getElementById('l-err').style.display='none';CS={...s,code};document.getElementById('login-screen').style.display='none';document.getElementById('app').style.display='block';initApp();}else{document.getElementById('l-err').style.display='block';}}
-function logout(){CS=null;document.getElementById('login-screen').style.display='flex';document.getElementById('app').style.display='none';document.getElementById('l-code').value='';document.getElementById('l-pass').value='';}
-document.getElementById('l-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
-document.getElementById('l-code').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('l-pass').focus();});
-document.getElementById('l-code').addEventListener('input',e=>{e.target.value=e.target.value.toUpperCase();});
-function initApp(){document.getElementById('topbar-store').textContent=CS.name;document.getElementById('topbar-sm').textContent=CS.smName+' · Store Manager';document.getElementById('topbar-conv').textContent=CS.conv.current+'%';renderTab('overview');}
-function switchTab(t){CT=t;document.querySelectorAll('#tabs-nav button').forEach(b=>{b.style.borderBottomColor=b.onclick?.toString().includes("'"+t+"'")?'#1D9E75':'transparent';b.style.color=b.onclick?.toString().includes("'"+t+"'")?'#0a5c43':'#888';});renderTab(t);}
-function renderTab(t){const m=document.getElementById('main-content');m.innerHTML='';if(t==='overview')renderOverview(m);else if(t==='team')renderTeam(m);else if(t==='sessions')renderSessions(m);else if(t==='requests')renderRequests(m);}
-function card(inner){const d=document.createElement('div');d.style.cssText='background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;border:1px solid #E6E6E2';d.innerHTML=inner;return d;}
-function renderOverview(m){const gap=CS.conv.target-CS.conv.current;const trend=CS.conv.current-CS.conv.prevWeek;const rColors={high_risk:'#D03535',medium:'#C07818',stable:'#1D9E75',top_performer:'#2258C0'};const rc=rColors[CS.riskLevel]||'#888';const rLabels={high_risk:'🔴 High Risk',medium:'🟡 Medium',stable:'🟢 Stable',top_performer:'⭐ Top Performer'};m.innerHTML=`<div style="background:linear-gradient(135deg,#0a5c43,#1D9E75);border-radius:16px;padding:20px;margin-bottom:14px;color:#fff"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px"><div><div style="font-size:11px;opacity:.7;margin-bottom:4px">${CS.name} · ${CS.region}</div><div style="font-size:18px;font-weight:800;margin-bottom:6px">Conversion Dashboard</div><span style="font-size:10px;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.2);font-weight:700">${rLabels[CS.riskLevel]||CS.riskLevel}</span></div><div style="text-align:right"><div style="font-size:38px;font-weight:900;font-family:monospace;line-height:1">${CS.conv.current}%</div><div style="font-size:10px;opacity:.7">Target: ${CS.conv.target}%</div></div></div><div style="height:7px;background:rgba(255,255,255,.25);border-radius:7px;overflow:hidden;position:relative;margin-bottom:5px"><div style="height:100%;width:${(CS.conv.current/70)*100}%;background:rgba(255,255,255,.85);border-radius:7px"></div><div style="position:absolute;top:0;left:${(CS.conv.target/70)*100}%;width:2px;height:100%;background:rgba(255,255,255,.5)"></div></div><div style="display:flex;justify-content:space-between;font-size:9px;opacity:.6"><span>0%</span><span>Target ${CS.conv.target}%</span><span>70%</span></div></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:14px">${[[CS.conv.current+'%','This week',rc],[CS.conv.prevWeek+'%','Last week','#888'],[CS.mandatory+'%','Mandatory','#6040D8'],[CS.staff+' staff','Team','#0a5c43']].map(([v,l,col])=>`<div style="background:#fff;border:1px solid #E6E6E2;border-radius:12px;padding:13px;text-align:center"><div style="font-size:20px;font-weight:800;color:${col};font-family:monospace">${v}</div><div style="font-size:9px;color:#888;margin-top:2px">${l}</div></div>`).join('')}</div>${CS.issues.length?`<div style="background:#fff;border:1px solid #E6E6E2;border-radius:14px;padding:16px;margin-bottom:12px"><div style="font-size:12px;font-weight:700;margin-bottom:10px">Why conversion is below target</div>${CS.issues.map(iss=>{const im=IM[iss];return im?`<div style="background:${im.bg};border-radius:10px;padding:12px;margin-bottom:8px;border-left:3px solid ${im.color}"><div style="font-size:12px;font-weight:700;color:${im.color};margin-bottom:3px">${im.icon} ${im.label}</div><div style="font-size:11px;color:#44444C;margin-bottom:6px">${im.course} training recommended</div><button onclick="reqTraining('${iss}')" style="padding:6px 12px;background:#e8f5ef;color:#0a5c43;border:1px solid #4cc49a;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer">Request this training →</button></div>`:''}).join('')}</div>`:'<div style="background:#e8f5ef;border:1px solid #4cc49a;border-radius:14px;padding:20px;text-align:center;margin-bottom:12px"><div style="font-size:28px;margin-bottom:6px">✅</div><div style="font-weight:700;color:#0a5c43">Above target · Keep it up!</div></div>'}<div style="background:#fff;border:1px solid #E6E6E2;border-radius:14px;padding:16px;margin-bottom:12px"><div style="font-size:12px;font-weight:700;margin-bottom:10px">Next trainer visit</div><div style="background:#e8f5ef;border-radius:10px;padding:14px;border:1px solid #4cc49a;text-align:center"><div style="font-size:16px;font-weight:800;color:#0a5c43;margin-bottom:3px">May 5, 2026</div><div style="font-size:11px;color:#0a5c43">Mohammad Othman · CLARIVO Coaching</div></div></div>`;}
-function renderTeam(m){const emps={PAM:[{name:'Wid Jafaari',role:'SA'},{name:'Haya Alsaleh',role:'SA'},{name:'Abdulmajeed Albakran',role:'Optometrist'},{name:'Ayman Murad',role:'Opt Tech'},{name:'Roqaya Almalki',role:'SA'},{name:'Sara Alanazi',role:'SIC'},{name:'Ghadeer Alzahrani',role:'ASM'},{name:'Rasha Alothman',role:'SA'},{name:'Abdualrhman Alotaibe',role:'Optometrist'},{name:'Rakan Al Hindawi',role:'SIC'},{name:'Maen Al Fayi',role:'Optometrist'}],REM:[{name:'Atheer Alshareef',role:'SA'},{name:'Mohamed Labib',role:'Opt Tech'},{name:'reman mohsen',role:'SA'},{name:'Thamer Babaydhan',role:'SA'},{name:'Ahmed Asiri',role:'SM'},{name:'Mohanad Alhaj',role:'Senior Optician'},{name:'Ghala Nasser',role:'SA'},{name:'Hanan Alkaidy',role:'SA'},{name:'Hadab Aljuhani',role:'SA'},{name:'Remas Asiri',role:'SA'}]};const myEmps=emps[CS.code]||[];m.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><div><div style="font-size:16px;font-weight:800">${CS.name}</div><div style="font-size:11px;color:#888">${CS.staff} staff · ${CS.region}</div></div><button onclick="showNominateModal()" style="padding:8px 14px;background:#0a5c43;color:#fff;border:none;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer">+ Nominate for session</button></div><div style="background:#fff;border:1px solid #E6E6E2;border-radius:14px;overflow:hidden"><table style="width:100%;border-collapse:collapse;font-size:11px"><thead><tr>${['Name','Role','Status'].map(c=>`<th style="font-size:9px;font-weight:700;color:#888;padding:8px 12px;border-bottom:1px solid #E6E6E2;text-align:left;text-transform:uppercase">${c}</th>`).join('')}</tr></thead><tbody>${(myEmps.length?myEmps:[{name:'Full team list loading...',role:'—'}]).map(e=>`<tr><td style="padding:9px 12px;border-bottom:1px solid #F0F0EE;font-weight:600;color:#16161A">${e.name}</td><td style="padding:9px 12px;border-bottom:1px solid #F0F0EE"><span style="font-size:9px;padding:2px 8px;border-radius:20px;background:#EDEDEA;color:#44444C;font-weight:700">${e.role}</span></td><td style="padding:9px 12px;border-bottom:1px solid #F0F0EE"><span style="font-size:9px;color:#1D9E75;font-weight:700">✓ Active</span></td></tr>`).join('')}</tbody></table></div>`;window.showNominateModal=()=>{const o=document.createElement('div');o.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:500;padding:20px';o.onclick=e=>{if(e.target===o)o.remove();};o.innerHTML=`<div style="background:#fff;border-radius:20px;padding:24px;width:100%;max-width:400px"><div style="font-size:17px;font-weight:800;margin-bottom:4px">Nominate for session</div><div style="font-size:11px;color:#888;margin-bottom:16px">Select a session to nominate your team</div><select id="nom-s" style="width:100%;border:2px solid #E6E6E2;border-radius:10px;padding:10px;font-size:13px;margin-bottom:14px">${SESSIONS.filter(s=>s.status!=='completed').map(s=>`<option>${s.date} · ${s.course}</option>`).join('')}</select><button onclick="this.closest('[style*=fixed]').remove();alert('Nomination submitted! Your trainer has been notified.')" style="width:100%;padding:13px;background:#0a5c43;border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:800;cursor:pointer">Nominate →</button></div>`;document.body.appendChild(o);};
+const API = 'https://script.google.com/macros/s/AKfycbz9GOBhvUtpsBEAzWIDB4B0ENrGlOkS49cHmvuGBvU66fjW7CC6maysbuzD8YkTjpWt/exec';
+
+async function call(action, data={}) {
+  const GET=['getStores','getSessions','getRequests','ping'];
+  try {
+    if(GET.includes(action)){const r=await fetch(`${API}?${new URLSearchParams({action,...data})}`);const j=await r.json();return j.ok?j.data:null;}
+    else{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action,...data})});const j=await r.json();return j.ok?j.data:null;}
+  } catch(e){console.warn('[API]',e.message);return null;}
 }
-function renderSessions(m){const cols={classroom:'#1D9E75',instore:'#8b5cf6',virtual:'#2258C0'};const icons={classroom:'🏫',instore:'🏪',virtual:'💻'};m.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><div style="font-size:16px;font-weight:800">Training sessions</div><button onclick="showBookModal()" style="padding:8px 14px;background:#0a5c43;color:#fff;border:none;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer">+ Request session</button></div>${SESSIONS.map(s=>`<div style="background:#fff;border:1px solid #E6E6E2;border-radius:14px;padding:14px;margin-bottom:10px;border-left:4px solid ${cols[s.type]||'#888'}"><div style="font-size:13px;font-weight:800;margin-bottom:4px">${s.course}</div><div style="font-size:10px;color:#888;margin-bottom:3px">📅 ${s.date} · ${s.time} · ⏱ ${s.dur}</div><div style="font-size:10px;color:#888;margin-bottom:6px">${icons[s.type]} ${s.type} · 🧑‍🏫 ${s.trainer}</div><div style="display:flex;gap:6px;align-items:center"><span style="font-size:9px;padding:2px 8px;border-radius:20px;background:${s.status==='completed'?'#e8f5ef':s.status==='open'?'#EDF2FD':'#EDEDEA'};color:${s.status==='completed'?'#0a5c43':s.status==='open'?'#2258C0':'#888'};font-weight:700">${s.status}</span><span style="font-size:10px;color:#888">👥 ${s.enrolled}/${s.cap}</span>${s.status!=='completed'?`<button onclick="alert('Staff nominator opening...');" style="padding:4px 10px;background:#e8f5ef;color:#0a5c43;border:1px solid #4cc49a;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer">Nominate staff</button>`:'<span style="font-size:9px;color:#1D9E75;font-weight:700">✅ Completed</span>'}</div></div>`).join('')}`;window.showBookModal=()=>{const o=document.createElement('div');o.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:500;padding:20px';o.onclick=e=>{if(e.target===o)o.remove();};o.innerHTML=`<div style="background:#fff;border-radius:20px;padding:24px;width:100%;max-width:400px"><div style="font-size:17px;font-weight:800;margin-bottom:4px">Request a session</div><select style="width:100%;border:2px solid #E6E6E2;border-radius:10px;padding:10px;font-size:13px;margin:14px 0"><option>Needs Discovery</option><option>Objection Handling</option><option>Insurance Protocol</option><option>CLARIVO Lens</option><option>Guest Experience</option></select><input type="date" style="width:100%;border:2px solid #E6E6E2;border-radius:10px;padding:10px;font-size:13px;margin-bottom:14px"><button onclick="this.closest('[style*=fixed]').remove();alert('✅ Session request submitted! Your RTM will schedule within 48 hours.')" style="width:100%;padding:13px;background:#0a5c43;border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:800;cursor:pointer">Submit request →</button></div>`;document.body.appendChild(o);};
+
+function toast(msg,type='ok',ms=3000){
+  const el=document.createElement('div');el.className=`toast ${type}`;
+  el.innerHTML=`<span>${type==='ok'?'✅':'❌'}</span><span>${msg}</span>`;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(()=>{el.style.cssText='opacity:0;transition:opacity .3s';setTimeout(()=>el.remove(),300);},ms);
 }
-function renderRequests(m){m.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><div style="font-size:16px;font-weight:800">Training requests</div><button onclick="showBookModal()" style="padding:8px 14px;background:#0a5c43;color:#fff;border:none;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer">+ New request</button></div>${[{c:'Insurance refresher',s:'completed',d:'2026-04-10'},{c:'Rimless brand module',s:'in_progress',d:'2026-04-25'},...REQS].map(r=>`<div style="background:#fff;border:1px solid #E6E6E2;border-radius:14px;padding:14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:13px;font-weight:700;margin-bottom:3px">${r.c||r.course}</div>${r.d||r.date?`<div style="font-size:10px;color:#888">📅 ${r.d||r.date}</div>`:''}</div><span style="font-size:9px;padding:3px 9px;border-radius:20px;background:${r.s==='completed'?'#e8f5ef':r.s==='in_progress'?'#EDF2FD':'#FEF4E8'};color:${r.s==='completed'?'#0a5c43':r.s==='in_progress'?'#2258C0':'#C07818'};font-weight:700">${(r.s||'pending').replace('_',' ')}</span></div>`).join('')}`;
+
+const GAP={discovery_gap:{l:'Discovery Gap',t:'tr',i:'🎯',course:'Needs Discovery'},objection_handling:{l:'Objection Handling',t:'tr',i:'🛡',course:'Objection Handling'},product_knowledge:{l:'Product Knowledge',t:'ta',i:'📦',course:'CLARIVO Lens'},engagement_gap:{l:'Engagement Gap',t:'ta',i:'💬',course:'Guest Experience'},onboarding_gap:{l:'Onboarding Gap',t:'tp',i:'🆕',course:'Retail Induction'}};
+const pcc=p=>p>=55?'var(--g)':p>=48?'var(--amb)':'var(--red)';
+const RISK={high_risk:{l:'High Risk',t:'tr'},medium:{l:'Medium',t:'ta'},stable:{l:'Stable',t:'tg'},top_performer:{l:'Top Performer',t:'tb2'}};
+
+let CS=null,TAB='overview',D={store:null,sessions:[],requests:[]};
+
+async function doLogin(){
+  const code=document.getElementById('sc').value.trim().toUpperCase();
+  const pass=document.getElementById('sp').value.trim();
+  const errEl=document.getElementById('lerr');
+  const lBtn=document.querySelector('.lbtn');
+  errEl.style.display='none';
+  lBtn.textContent='Signing in...';lBtn.style.opacity='.7';lBtn.style.pointerEvents='none';
+
+  // Try API first
+  let user=await call('login',{storeCode:code,password:pass});
+
+  // Local fallback for key stores
+  if(!user){
+    const LOC={PAM:{n:'Panorama Mall',sm:'Sara Zaid Alanazi',p:'pam',r:'Central',conv:{cur:51,tgt:55,prev:53},mand:72,staff:11,issues:['discovery_gap'],risk:'medium'},
+               NKL:{n:'Nakheel Mall',sm:'TBA',p:'nkl',r:'Central',conv:{cur:42,tgt:55,prev:40},mand:50,staff:9,issues:['objection_handling'],risk:'high_risk'},
+               YSM:{n:'Al Yasmin Mall',sm:'Ahmed Asiri',p:'ysm',r:'Central',conv:{cur:38,tgt:55,prev:41},mand:75,staff:11,issues:['discovery_gap','objection_handling'],risk:'high_risk'},
+               ARD:{n:'Al Aared Mall',sm:'TBA',p:'ard',r:'Central',conv:{cur:53,tgt:55,prev:52},mand:83,staff:6,issues:['engagement_gap'],risk:'medium'},
+               RPT:{n:'Riyadh Park',sm:'Yazan Alqarni',p:'rpt',r:'Central',conv:{cur:62,tgt:55,prev:60},mand:88,staff:9,issues:[],risk:'stable'},
+               MOA:{n:'Mall of Arabia',sm:'Ahmed Shawish',p:'moa',r:'Western',conv:{cur:35,tgt:55,prev:38},mand:42,staff:9,issues:['onboarding_gap','discovery_gap'],risk:'high_risk'},
+               KKA:{n:'King Khalid Airport',sm:'Sarah Alobaid',p:'kka',r:'Central',conv:{cur:64,tgt:55,prev:62},mand:90,staff:8,issues:[],risk:'top_performer'},
+               MAD:{n:'Dareen Mall',sm:'Hadeel Alshorman',p:'mad',r:'Eastern',conv:{cur:44,tgt:55,prev:46},mand:64,staff:9,issues:['discovery_gap'],risk:'high_risk'},
+               GRD:{n:'Gulf Rd',sm:'Dina Aldossary',p:'grd',r:'Eastern',conv:{cur:49,tgt:55,prev:50},mand:68,staff:8,issues:['engagement_gap'],risk:'medium'},
+               REM:{n:'Red Sea Mall',sm:'Ahmed A Asiri',p:'rem',r:'Western',conv:{cur:40,tgt:55,prev:43},mand:33,staff:10,issues:['onboarding_gap','discovery_gap'],risk:'high_risk'},
+    };
+    const l=LOC[code];if(l&&(pass===l.p||pass===code.toLowerCase())) user={type:'store_manager',storeCode:code,storeName:l.n,smName:l.sm,region:l.r,conv:l.conv,mandatoryPct:l.mand,staffCount:l.staff,issues:l.issues,riskLevel:l.risk};
+  }
+
+  lBtn.textContent='Enter →';lBtn.style.opacity='';lBtn.style.pointerEvents='';
+
+  if(!user){errEl.style.display='block';errEl.textContent='⚠ Incorrect store code or password.';return;}
+
+  CS=user;
+  // If API returned flat data, structure it
+  if(!CS.conv) CS.conv={cur:Number(CS.conv_current)||0,tgt:Number(CS.conv_target)||55,prev:Number(CS.conv_prev_week)||0};
+  if(!CS.issues) CS.issues=(CS.issues_raw||'').split(',').filter(Boolean);
+
+  document.getElementById('login').style.display='none';
+  document.getElementById('app').style.display='flex';
+  document.getElementById('sname').textContent=CS.storeName||CS.store_name||code;
+  document.getElementById('smname').textContent=(CS.smName||CS.sm_name||'Store Manager')+' · Store Manager';
+  document.getElementById('conv-disp').textContent=(CS.conv?.cur||0)+'%';
+  buildTabs(); loadData(); render();
 }
-window.reqTraining=function(iss){const im=IM[iss];REQS.push({course:im?.course||iss,date:'',s:'pending'});alert('✅ Training request submitted!\n\n'+im?.course+'\n\nYour RTM will schedule within 48 hours.');renderTab('requests');renderTab(CT);};
+
+function doLogout(){CS=null;D={store:null,sessions:[],requests:[]};document.getElementById('login').style.display='flex';document.getElementById('app').style.display='none';document.getElementById('sc').value='';document.getElementById('sp').value='';}
+document.getElementById('sp').onkeydown=e=>{if(e.key==='Enter')doLogin();};
+document.getElementById('sc').oninput=e=>{e.target.value=e.target.value.toUpperCase();};
+
+async function loadData(){
+  const code=CS.storeCode||CS.store_code;
+  const [sessions,requests]=await Promise.all([call('getSessions',{storeCode:code}),call('getRequests',{storeCode:code})]);
+  D.sessions=sessions||[];D.requests=requests||[];
+  if(['sessions','requests'].includes(TAB)) render();
+}
+
+function buildTabs(){
+  const nav=document.getElementById('tabs');nav.innerHTML='';
+  [['overview','📊 Overview'],['team','👥 My Team'],['sessions','📅 Sessions'],['requests','📩 Requests']].forEach(([id,l])=>{
+    const b=document.createElement('button');b.className=`tab-btn${TAB===id?' on':''}`;b.textContent=l;
+    b.onclick=()=>{TAB=id;render();};nav.appendChild(b);
+  });
+}
+
+function render(){
+  buildTabs();
+  const m=document.getElementById('main');m.innerHTML='';
+  if(TAB==='overview') m.appendChild(vOverview());
+  else if(TAB==='team') m.appendChild(vTeam());
+  else if(TAB==='sessions') m.appendChild(vSessions());
+  else if(TAB==='requests') m.appendChild(vRequests());
+}
+
+// ── OVERVIEW ────────────────────────────────────────
+function vOverview(){
+  const w=document.createElement('div');w.style.animation='up .35s var(--ease) both';
+  const pct=CS.conv?.cur||0;const tgt=CS.conv?.tgt||55;const gap=tgt-pct;
+  const rm=RISK[CS.riskLevel||CS.risk_level]||RISK.medium;
+
+  // Hero conversion card
+  const hero=document.createElement('div');
+  hero.className='card';hero.style.background=`linear-gradient(135deg,var(--g),${pct>=55?'#0d7a34':'#158A3E'})`;
+  hero.style.border='none';hero.style.marginBottom='12px';
+  hero.innerHTML=`
+    <div style="color:#fff">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+        <div>
+          <div style="font-size:9px;opacity:.7;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">${CS.storeName||CS.storeCode} · ${CS.region||''}</div>
+          <div style="font-size:17px;font-weight:800;margin-bottom:6px">Conversion Dashboard</div>
+          <span class="tag" style="background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.3)">${rm.l}</span>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:44px;font-weight:700;line-height:1;letter-spacing:-2px">${pct}%</div>
+          <div style="font-size:10px;opacity:.7">Target: ${tgt}%</div>
+        </div>
+      </div>
+      <div style="height:6px;background:rgba(255,255,255,.25);border-radius:6px;overflow:hidden;position:relative;margin-bottom:4px">
+        <div style="height:100%;width:${Math.min((pct/70)*100,100)}%;background:rgba(255,255,255,.85);border-radius:6px;transition:width .7s var(--ease)"></div>
+        <div style="position:absolute;top:0;left:${Math.min((tgt/70)*100,100)}%;width:2px;height:100%;background:rgba(255,255,255,.5)"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:9px;opacity:.6"><span>0%</span><span>Target ${tgt}%</span><span>70%</span></div>
+    </div>`;
+  w.appendChild(hero);
+
+  // Stats row
+  const sg=document.createElement('div');sg.style.cssText='display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:9px;margin-bottom:12px';
+  [[pct+'%','This week',pcc(pct)],[(CS.conv?.prev||0)+'%','Last week','var(--t3)'],[(CS.mandatoryPct||CS.mandatory_pct||0)+'%','Mandatory','var(--purp)'],[(CS.staffCount||CS.staff_count||0)+' staff','Team','var(--g)']].forEach(([v,l,c])=>{
+    const s=document.createElement('div');s.className='card';s.style.textAlign='center';s.style.padding='12px 8px';
+    s.innerHTML=`<div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:${c};margin-bottom:3px">${v}</div><div style="font-size:9px;color:var(--t3)">${l}</div>`;
+    sg.appendChild(s);
+  });
+  w.appendChild(sg);
+
+  // Issues
+  const issues=CS.issues||[];
+  if(issues.length){
+    const ic=document.createElement('div');ic.className='card';ic.style.marginBottom='12px';
+    ic.innerHTML=`<div style="font-size:12px;font-weight:700;margin-bottom:10px">Why conversion is below target</div>`;
+    issues.forEach(g=>{
+      const gm=GAP[g];if(!gm)return;
+      const row=document.createElement('div');
+      row.style.cssText='background:var(--redbg);border-radius:9px;padding:11px 12px;margin-bottom:8px;border-left:3px solid var(--red)';
+      row.innerHTML=`<div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:2px">${gm.i} ${gm.l}</div>
+        <div style="font-size:11px;color:var(--t2);margin-bottom:7px">${gm.course} training recommended</div>
+        <button class="btn bp" style="font-size:10px;padding:5px 11px" onclick="reqTraining('${g}')">Request this training →</button>`;
+      ic.appendChild(row);
+    });
+    w.appendChild(ic);
+  } else {
+    const ok=document.createElement('div');ok.className='card';ok.style.marginBottom='12px';
+    ok.style.textAlign='center';ok.style.padding='24px';
+    ok.innerHTML=`<div style="font-size:32px;margin-bottom:8px">✅</div><div style="font-weight:700;color:var(--g)">Above target · Keep it up!</div>`;
+    w.appendChild(ok);
+  }
+
+  // Next visit
+  const nv=document.createElement('div');nv.className='card';
+  nv.innerHTML=`<div style="font-size:12px;font-weight:700;margin-bottom:9px">Next trainer visit</div>
+    <div style="background:var(--gl);border:1px solid var(--gb);border-radius:9px;padding:13px;text-align:center">
+      <div style="font-size:15px;font-weight:800;color:var(--g);margin-bottom:2px">${D.sessions.find(s=>s.status==='planned')?new Date(D.sessions.find(s=>s.status==='planned').date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}):'Checking schedule...'}</div>
+      <div style="font-size:11px;color:var(--gd)">${D.sessions.find(s=>s.status==='planned')?.course||'Contact your trainer for scheduling'}</div>
+    </div>`;
+  w.appendChild(nv);
+  return w;
+}
+
+// ── TEAM ─────────────────────────────────────────────
+function vTeam(){
+  const w=document.createElement('div');w.style.animation='up .35s var(--ease) both';
+  const c=document.createElement('div');c.className='card';
+  c.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><div style="font-size:13px;font-weight:700">${CS.storeName} Team</div><div style="font-size:11px;color:var(--t3)">${CS.staffCount||'—'} staff</div></div>
+    <table style="width:100%;border-collapse:collapse;font-size:11px">
+      <thead><tr>${['Name','Role','Status'].map(h=>`<th style="font-size:9px;font-weight:700;color:var(--t3);padding:7px 9px;border-bottom:2px solid var(--border);text-align:left;text-transform:uppercase;letter-spacing:.07em">${h}</th>`).join('')}</tr></thead>
+      <tbody id="team-body"></tbody>
+    </table>`;
+  w.appendChild(c);
+  // Simulate team data — in production this comes from attendance API
+  const ROLES=['SA','SA','SA','Senior SA','SIC','Optician','Optometrist','SA','SA','SA','SA'];
+  const N=['Team Member 1','Team Member 2','Team Member 3','Team Member 4','Team Member 5','Team Member 6','Team Member 7','Team Member 8','Team Member 9','Team Member 10','Team Member 11'];
+  const tbody=c.querySelector('#team-body');
+  for(let i=0;i<Math.min(CS.staffCount||5,11);i++){
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td style="padding:8px 9px;border-bottom:1px solid var(--bg2)">${N[i]||'Team Member'}</td><td style="padding:8px 9px;border-bottom:1px solid var(--bg2)"><span class="tag tx">${ROLES[i]||'SA'}</span></td><td style="padding:8px 9px;border-bottom:1px solid var(--bg2)"><span class="tag tg">Active</span></td>`;
+    tbody.appendChild(tr);
+  }
+  return w;
+}
+
+// ── SESSIONS ─────────────────────────────────────────
+function vSessions(){
+  const w=document.createElement('div');w.style.animation='up .35s var(--ease) both';
+  const sh=document.createElement('div');sh.style.cssText='display:flex;justify-content:space-between;align-items:center;margin-bottom:12px';
+  sh.innerHTML=`<div style="font-size:13px;font-weight:700">Training sessions</div>`;
+  const rb=document.createElement('button');rb.className='btn bp';rb.style.fontSize='10px';rb.style.padding='6px 12px';rb.textContent='+ Request session';rb.onclick=()=>mRequest();
+  sh.appendChild(rb);w.appendChild(sh);
+
+  const stc={planned:'tb2',open:'tg',completed:'tg',cancelled:'tr',instore:'tg',classroom:'tb2',virtual:'tp'};
+  if(!D.sessions.length){
+    const empty=document.createElement('div');empty.className='card';empty.style.cssText='text-align:center;padding:32px';
+    empty.innerHTML=`<div style="font-size:32px;margin-bottom:10px">📅</div><div style="font-weight:700;color:var(--t2);margin-bottom:4px">No sessions scheduled</div><div style="font-size:11px;color:var(--t3)">Contact your trainer or submit a request</div>`;
+    w.appendChild(empty);
+  } else {
+    D.sessions.forEach((s,i)=>{
+      const card=document.createElement('div');card.className='card';card.style.cssText=`margin-bottom:9px;border-left:3px solid ${s.status==='completed'?'var(--g)':s.status==='planned'?'var(--blue)':'var(--border)'}`;
+      card.innerHTML=`
+        <div style="font-size:13px;font-weight:700;margin-bottom:5px">${s.course}</div>
+        <div style="font-size:10px;color:var(--t3);margin-bottom:7px">📅 ${s.date||'TBD'} · ${s.time||''} · ⏱ ${s.duration||'2h'} · 👤 ${s.trainer_id||'Trainer'}</div>
+        <div style="display:flex;gap:5px;align-items:center">
+          <span class="tag ${stc[s.type||'instore']||'tx'}">${s.type||'instore'}</span>
+          <span class="tag ${stc[s.status||'planned']||'tx'}">${s.status||'planned'}</span>
+          <span style="font-size:10px;color:var(--t3)">👥 ${s.enrolled||0}/${s.capacity||20}</span>
+        </div>`;
+      w.appendChild(card);
+    });
+  }
+  return w;
+}
+
+// ── REQUESTS ─────────────────────────────────────────
+function vRequests(){
+  const w=document.createElement('div');w.style.animation='up .35s var(--ease) both';
+  const sh=document.createElement('div');sh.style.cssText='display:flex;justify-content:space-between;align-items:center;margin-bottom:12px';
+  sh.innerHTML=`<div style="font-size:13px;font-weight:700">Training requests</div>`;
+  const rb=document.createElement('button');rb.className='btn bp';rb.style.fontSize='10px';rb.style.padding='6px 12px';rb.textContent='+ New request';rb.onclick=()=>mRequest();
+  sh.appendChild(rb);w.appendChild(sh);
+
+  const rsc={pending:'ta',in_progress:'tb2',completed:'tg'};
+  if(!D.requests.length){
+    const empty=document.createElement('div');empty.className='card';empty.style.cssText='text-align:center;padding:32px';
+    empty.innerHTML=`<div style="font-size:32px;margin-bottom:10px">📩</div><div style="font-weight:700;color:var(--t2);margin-bottom:4px">No requests yet</div><div style="font-size:11px;color:var(--t3)">Submit a training request to your RTM</div>`;
+    w.appendChild(empty);
+  } else {
+    D.requests.forEach(r=>{
+      const card=document.createElement('div');card.className='card';card.style.marginBottom='9px';
+      card.innerHTML=`<div style="display:flex;align-items:center;gap:9px"><div style="flex:1"><div style="font-size:12px;font-weight:700;margin-bottom:2px">${r.course}</div><div style="font-size:10px;color:var(--t3)">📅 ${r.preferred_date||'TBD'}</div>${r.notes?`<div style="font-size:11px;color:var(--t2);margin-top:3px">${r.notes}</div>`:''}</div><span class="tag ${rsc[r.status]||'tx'}">${(r.status||'pending').replace('_',' ')}</span></div>`;
+      w.appendChild(card);
+    });
+  }
+  return w;
+}
+
+// ── REQUEST MODAL ─────────────────────────────────────
+function mRequest(prefillGap){
+  const mo=document.createElement('div');mo.className='mo';mo.onclick=e=>{if(e.target===mo)mo.remove();};
+  mo.innerHTML=`<div class="mo-box">
+    <h3>Request a training session</h3><div class="mo-sub">Saved to Google Sheets — your RTM will schedule within 48 hours</div>
+    <div class="mf"><label>Course *</label>
+      <select class="inp" id="rq-c">
+        <option value="Needs Discovery">Needs Discovery</option>
+        <option value="Objection Handling">Objection Handling</option>
+        <option value="Insurance Protocol">Insurance Protocol</option>
+        <option value="CLARIVO Progressive Lens">CLARIVO Progressive Lens</option>
+        <option value="Guest Experience">Guest Experience</option>
+        <option value="Retail Induction">Retail Induction</option>
+        <option value="Product Knowledge">Product Knowledge</option>
+        <option value="Other">Other</option>
+      </select></div>
+    <div class="mf"><label>Preferred date</label><input class="inp" id="rq-d" type="date"></div>
+    <div class="mf"><label>Number of staff</label><input class="inp" id="rq-s" type="number" placeholder="e.g. 8" value="${CS.staffCount||''}"></div>
+    <div class="mf"><label>Notes (optional)</label><textarea class="inp" id="rq-n" rows="2" placeholder="Any context for your trainer..."></textarea></div>
+    <div class="ma">
+      <button class="btn bp" id="rq-sv" onclick="svRequest()">Submit request →</button>
+      <button class="btn bg2" onclick="this.closest('.mo').remove()">Cancel</button>
+    </div></div>`;
+  if(prefillGap){const sel=mo.querySelector('#rq-c');if(sel)[...sel.options].forEach(o=>{if(o.value.toLowerCase().includes(prefillGap.split('_')[0]))o.selected=true;});}
+  document.body.appendChild(mo);
+}
+
+async function svRequest(){
+  const course=document.getElementById('rq-c')?.value;
+  const date=document.getElementById('rq-d')?.value;
+  const staff=document.getElementById('rq-s')?.value;
+  const notes=document.getElementById('rq-n')?.value;
+  if(!course){toast('Please select a course','err');return;}
+  const sb=document.getElementById('rq-sv');sb.textContent='Submitting...';sb.style.opacity='.7';sb.style.pointerEvents='none';
+  const res=await call('createRequest',{store_code:CS.storeCode||CS.store_code,sm_email:CS.smEmail||CS.sm_email||'',course,preferred_date:date,staff_count:staff,notes});
+  if(res){
+    D.requests.unshift({...res,status:'pending'});
+    document.querySelector('.mo')?.remove();
+    TAB='requests';render();
+    toast('Request submitted ✓ — your RTM will respond within 48 hours','ok',4500);
+  } else {
+    sb.textContent='Submit request →';sb.style.opacity='';sb.style.pointerEvents='';
+    toast('Failed — check connection and try again','err');
+  }
+}
+
+async function reqTraining(gap){
+  const gm=GAP[gap];
+  const mo=document.createElement('div');mo.className='mo';mo.onclick=e=>{if(e.target===mo)mo.remove();};
+  mo.innerHTML=`<div class="mo-box">
+    <h3>Request: ${gm?.l||gap}</h3><div class="mo-sub">Saved to Google Sheets — RTM notified immediately</div>
+    <div class="mf"><label>Preferred date</label><input class="inp" id="rt-d" type="date"></div>
+    <div class="mf"><label>Notes (optional)</label><textarea class="inp" id="rt-n" rows="2" placeholder="Any context..."></textarea></div>
+    <div class="ma">
+      <button class="btn bp" id="rt-sv" onclick="svQuickReq('${gm?.course||gap}')">Submit request →</button>
+      <button class="btn bg2" onclick="this.closest('.mo').remove()">Cancel</button>
+    </div></div>`;
+  document.body.appendChild(mo);
+}
+
+async function svQuickReq(course){
+  const date=document.getElementById('rt-d')?.value;
+  const notes=document.getElementById('rt-n')?.value;
+  const sb=document.getElementById('rt-sv');sb.textContent='Submitting...';sb.style.opacity='.7';sb.style.pointerEvents='none';
+  const res=await call('createRequest',{store_code:CS.storeCode||CS.store_code,sm_email:CS.smEmail||CS.sm_email||'',course,preferred_date:date,staff_count:CS.staffCount||'',notes});
+  if(res){D.requests.unshift({...res,status:'pending'});document.querySelector('.mo')?.remove();toast('Request submitted ✓','ok',4000);}
+  else{sb.textContent='Submit request →';sb.style.opacity='';sb.style.pointerEvents='';toast('Failed — check connection','err');}
+}
 </script>
 </body>
 </html>
